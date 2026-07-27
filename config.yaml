@@ -1,0 +1,28 @@
+# Global defaults for fine-tuning and evaluation runs.
+# Individual experiments may override these values; see 03_Experiments/.
+
+paths:
+  data_dir: data/
+  output_dir: results/
+  cache_dir: .cache/
+
+model:
+  base_model_name: null  # e.g. "Qwen/Qwen2.5-0.5B" — not yet decided, see 01_Daily_Logs/2026-07-27.md
+
+training:
+  seed: 42
+  precision: bf16
+  lora:
+    r: 16
+    alpha: 32
+    dropout: 0.05
+  learning_rate: 2.0e-4
+  batch_size: 4
+  num_epochs: 3
+
+eval:
+  benchmarks: []
+
+wandb:
+  project: llm-alignment-internship
+  mode: online
