@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+env/
+*.egg-info/
+
+# Secrets
+.env
+
+# Obsidian local config
+.obsidian/
+
+# Experiment tracking
+wandb/
+
+# Model artifacts (large binaries, never checked in)
+results/**/checkpoint-*
+*.safetensors
+*.bin
+*.gguf
+
+# Notebook noise
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
