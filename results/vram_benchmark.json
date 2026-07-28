@@ -1,0 +1,17 @@
+[
+  {
+    "precision": "FP32",
+    "allocated_mb": 1885.3,
+    "peak_mb": 1885.3
+  },
+  {
+    "precision": "FP16",
+    "allocated_mb": 950.2,
+    "peak_mb": 950.2
+  },
+  {
+    "precision": "BF16",
+    "allocated_mb": 950.2,
+    "peak_mb": 950.2
+  }
+]
