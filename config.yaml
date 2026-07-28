@@ -7,7 +7,7 @@ paths:
   cache_dir: .cache/
 
 model:
-  base_model_name: null  # e.g. "Qwen/Qwen2.5-0.5B" — not yet decided, see 01_Daily_Logs/2026-07-27.md
+  base_model_name: "Qwen/Qwen2.5-0.5B"  # chosen for fast iteration (Week 1 goal: full pipeline in <12h); already benchmarked in results/vram_benchmark.json
 
 training:
   seed: 42
