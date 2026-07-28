@@ -1,0 +1,7 @@
+FROM ./model.gguf
+
+SYSTEM """
+You are a helpful assistant.
+"""
+
+TEMPLATE """{{ .Prompt }}"""
