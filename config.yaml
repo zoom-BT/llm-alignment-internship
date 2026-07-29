@@ -9,6 +9,9 @@ paths:
 model:
   base_model_name: "Qwen/Qwen2.5-0.5B"  # chosen for fast iteration (Week 1 goal: full pipeline in <12h); already benchmarked in results/vram_benchmark.json
 
+data:
+  dataset_name: "databricks/databricks-dolly-15k"  # Week 1 pipeline dataset (small, real, CC BY-SA 3.0); not the final research dataset — that's chosen in Week 4
+
 training:
   seed: 42
   precision: bf16
