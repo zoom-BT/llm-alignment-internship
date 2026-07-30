@@ -33,3 +33,17 @@ def format_as_chat_messages(example: dict) -> list[dict]:
         {"role": "user", "content": user_content},
         {"role": "assistant", "content": example["response"]},
     ]
+
+
+def tokenize_example(tokenizer, example: dict) -> dict:
+    """Format `example` with the chat template, then tokenize the resulting text."""
+    messages = format_as_chat_messages(example)
+    text = tokenizer.apply_chat_template(messages, tokenize=False)
+    return tokenizer(text)
+
+
+def tokenize_and_cache(dataset: Dataset, tokenizer, cache_dir: str) -> Dataset:
+    """Tokenize every row of `dataset` and persist the result to `cache_dir`."""
+    tokenized = dataset.map(lambda example: tokenize_example(tokenizer, example))
+    tokenized.save_to_disk(cache_dir)
+    return tokenized
