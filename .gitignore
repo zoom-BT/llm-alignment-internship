@@ -20,6 +20,9 @@ results/**/checkpoint-*
 *.bin
 *.gguf
 
+# Tokenization/dataset cache (regenerable, see config.yaml paths.cache_dir)
+.cache/
+
 # Notebook noise
 .ipynb_checkpoints/
 

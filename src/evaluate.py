@@ -1,9 +1,60 @@
 """Benchmark and generation evaluation via lighteval/evaluate."""
 
+import json
+import math
+from pathlib import Path
 
-def run_benchmark(config: dict):
-    """Score a checkpoint against the benchmark(s) named in config['eval']['benchmarks']."""
-    raise NotImplementedError("Wire up once the first checkpoint exists.")
+from src.data import load_split_dataset
+
+
+def compute_perplexity(model, tokenizer, texts: list[str]) -> float:
+    """Compute corpus-level perplexity: exp(mean cross-entropy loss, weighted by token count)."""
+    total_loss = 0.0
+    total_tokens = 0
+    for text in texts:
+        inputs = tokenizer(text, return_tensors="pt")
+        num_tokens = inputs["input_ids"].shape[1] - 1  # shifted: n-1 next-token predictions
+        if num_tokens < 1:
+            continue  # a single token has no next-token target; loss would be NaN
+        outputs = model(**inputs, labels=inputs["input_ids"])
+        total_loss += outputs.loss.item() * num_tokens
+        total_tokens += num_tokens
+    return math.exp(total_loss / total_tokens)
+
+
+def run_benchmark(config: dict) -> dict:
+    """Compute baseline perplexity of `config['model']['base_model_name']` on the test split,
+    and save the result to `config['paths']['output_dir']/baseline_results.json`.
+    """
+    import torch
+    from transformers import AutoModelForCausalLM, AutoTokenizer
+
+    model_name = config["model"]["base_model_name"]
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model = AutoModelForCausalLM.from_pretrained(model_name, dtype=torch.float32)
+    model.eval()
+
+    splits = load_split_dataset(config)
+    texts = splits["test"]["response"]
+
+    with torch.no_grad():
+        perplexity = compute_perplexity(model, tokenizer, texts)
+
+    results = {
+        "model": model_name,
+        "dataset": config["data"]["dataset_name"],
+        "metric": "perplexity",
+        "split": "test",
+        "num_examples": len(texts),
+        "perplexity": perplexity,
+    }
+
+    output_path = Path(config["paths"]["output_dir"]) / "baseline_results.json"
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(output_path, "w") as f:
+        json.dump(results, f, indent=2)
+
+    return results
 
 
 def generate_samples(model, tokenizer, prompts: list[str], **generation_kwargs) -> list[str]:

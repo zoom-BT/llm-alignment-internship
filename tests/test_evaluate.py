@@ -1,6 +1,8 @@
+import math
+
 import torch
 
-from src.evaluate import generate_batch, generate_samples
+from src.evaluate import compute_perplexity, generate_batch, generate_samples
 
 
 class FakeGenerationTokenizer:
@@ -70,3 +72,49 @@ def test_generate_batch_returns_one_completion_per_prompt():
     completions = generate_batch(FakeBatchModel(), FakeBatchTokenizer(), ["a", "b", "c"])
     assert len(completions) == 3
     assert all(c == "batch completion" for c in completions)
+
+
+class FakePerplexityTokenizer:
+    def __call__(self, text, return_tensors=None):
+        # One token per character - simplistic but deterministic and controllable.
+        return {"input_ids": torch.tensor([[0] * len(text)])}
+
+
+class VariableLossModel:
+    """Returns a different fixed loss depending on the input length, to test weighting."""
+
+    def __call__(self, input_ids, labels=None):
+        class Output:
+            pass
+
+        out = Output()
+        out.loss = torch.tensor(2.0 if input_ids.shape[1] <= 2 else 1.0)
+        return out
+
+
+def test_compute_perplexity_weights_by_token_count_not_by_text_count():
+    # "aaaa" -> 4 tokens -> 3 predicted positions, loss=1.0
+    # "bb"   -> 2 tokens -> 1 predicted position,  loss=2.0
+    # weighted mean loss = (1.0*3 + 2.0*1) / (3+1) = 1.25, NOT the naive (1.0+2.0)/2 = 1.5
+    ppl = compute_perplexity(VariableLossModel(), FakePerplexityTokenizer(), ["aaaa", "bb"])
+    assert ppl == math.exp(1.25)
+
+
+class ModelWithNaNOnSingleToken:
+    """A single-token input has no valid next-token target; a real model returns NaN loss for it."""
+
+    def __call__(self, input_ids, labels=None):
+        class Output:
+            pass
+
+        out = Output()
+        out.loss = torch.tensor(float("nan") if input_ids.shape[1] <= 1 else 1.0)
+        return out
+
+
+def test_compute_perplexity_skips_texts_with_fewer_than_2_tokens():
+    # "a" -> 1 token -> no predicted position, must be skipped (would otherwise poison the sum with NaN)
+    # "bb" -> 2 tokens -> 1 predicted position, loss=1.0
+    ppl = compute_perplexity(ModelWithNaNOnSingleToken(), FakePerplexityTokenizer(), ["a", "bb"])
+    assert not math.isnan(ppl)
+    assert ppl == math.exp(1.0)
