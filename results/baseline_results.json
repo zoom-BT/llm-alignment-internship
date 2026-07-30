@@ -1,0 +1,8 @@
+{
+  "model": "Qwen/Qwen2.5-0.5B",
+  "dataset": "databricks/databricks-dolly-15k",
+  "metric": "perplexity",
+  "split": "test",
+  "num_examples": 1502,
+  "perplexity": 13.919310670678419
+}
