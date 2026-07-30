@@ -15,13 +15,18 @@ data:
 training:
   seed: 42
   precision: bf16
+  full_finetune: true  # Week 1: full fine-tuning, small enough model to afford it; LoRA/QLoRA start in Week 3
   lora:
     r: 16
     alpha: 32
     dropout: 0.05
   learning_rate: 2.0e-4
   batch_size: 4
+  gradient_accumulation_steps: 4
+  gradient_checkpointing: true
   num_epochs: 3
+  max_seq_length: 512
+  logging_backend: tensorboard  # no external account needed; switch to "wandb" once a wandb account/API key is set up
 
 eval:
   benchmarks: []
