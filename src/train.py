@@ -5,10 +5,14 @@ git-clone-based sync pattern used to pull this module into a notebook.
 """
 
 
-def run_sft(config: dict):
+def run_sft(config: dict, max_steps: int = -1):
     """Run supervised fine-tuning with trl.SFTTrainer, using `config['training']` for hyperparameters.
 
     Full fine-tuning for Week 1 (small model, no `peft_config`); LoRA/QLoRA start in Week 3.
+
+    `max_steps` (-1 by default, meaning "run the full `num_epochs`") lets a caller cap the
+    run to a handful of steps for a dry run, to check for out-of-memory errors before
+    committing to the full training time.
     """
     import torch
     from transformers import AutoModelForCausalLM, AutoTokenizer
@@ -40,6 +44,7 @@ def run_sft(config: dict):
         gradient_accumulation_steps=training_config["gradient_accumulation_steps"],
         gradient_checkpointing=training_config["gradient_checkpointing"],
         num_train_epochs=training_config["num_epochs"],
+        max_steps=max_steps,
         learning_rate=training_config["learning_rate"],
         max_length=training_config["max_seq_length"],
         seed=training_config["seed"],
