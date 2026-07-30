@@ -23,9 +23,16 @@ def compute_perplexity(model, tokenizer, texts: list[str]) -> float:
     return math.exp(total_loss / total_tokens)
 
 
-def run_benchmark(config: dict) -> dict:
-    """Compute baseline perplexity of `config['model']['base_model_name']` on the test split,
-    and save the result to `config['paths']['output_dir']/baseline_results.json`.
+def run_benchmark(
+    config: dict, model_path: str | None = None, output_filename: str = "baseline_results.json"
+) -> dict:
+    """Compute perplexity of a model on the test split, and save the result to
+    `config['paths']['output_dir']/output_filename`.
+
+    `model_path` defaults to `config['model']['base_model_name']` (the base model, for the
+    "before" baseline). Pass a local checkpoint directory (e.g. `results/checkpoints/final`)
+    to evaluate a fine-tuned model instead, for the "after" comparison — same dataset, same
+    metric, same code path, so the two numbers are directly comparable.
     """
     import torch
     from transformers import AutoModelForCausalLM, AutoTokenizer
@@ -35,7 +42,7 @@ def run_benchmark(config: dict) -> dict:
     dtype_by_precision = {"fp32": torch.float32, "fp16": torch.float16, "bf16": torch.bfloat16}
     dtype = dtype_by_precision[config["training"]["precision"]]
 
-    model_name = config["model"]["base_model_name"]
+    model_name = model_path or config["model"]["base_model_name"]
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelForCausalLM.from_pretrained(model_name, dtype=dtype)
     model.to(get_device())
@@ -56,7 +63,7 @@ def run_benchmark(config: dict) -> dict:
         "perplexity": perplexity,
     }
 
-    output_path = Path(config["paths"]["output_dir"]) / "baseline_results.json"
+    output_path = Path(config["paths"]["output_dir"]) / output_filename
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, "w") as f:
         json.dump(results, f, indent=2)
