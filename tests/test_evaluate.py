@@ -16,6 +16,8 @@ class FakeGenerationTokenizer:
 
 
 class FakeGenerationModel:
+    device = torch.device("cpu")
+
     def generate(self, input_ids, pad_token_id=None, **kwargs):
         # Simulates appending 2 newly generated tokens after the prompt tokens.
         return torch.cat([input_ids, torch.tensor([[4, 5]])], dim=1)
@@ -57,6 +59,8 @@ class FakeBatchTokenizer:
 
 
 class FakeBatchModel:
+    device = torch.device("cpu")
+
     def generate(self, input_ids, pad_token_id=None, **kwargs):
         extra = torch.tensor([[9, 9] for _ in range(input_ids.shape[0])])
         return torch.cat([input_ids, extra], dim=1)
@@ -83,6 +87,8 @@ class FakePerplexityTokenizer:
 class VariableLossModel:
     """Returns a different fixed loss depending on the input length, to test weighting."""
 
+    device = torch.device("cpu")
+
     def __call__(self, input_ids, labels=None):
         class Output:
             pass
@@ -102,6 +108,8 @@ def test_compute_perplexity_weights_by_token_count_not_by_text_count():
 
 class ModelWithNaNOnSingleToken:
     """A single-token input has no valid next-token target; a real model returns NaN loss for it."""
+
+    device = torch.device("cpu")
 
     def __call__(self, input_ids, labels=None):
         class Output:

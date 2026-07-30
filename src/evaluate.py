@@ -13,6 +13,7 @@ def compute_perplexity(model, tokenizer, texts: list[str]) -> float:
     total_tokens = 0
     for text in texts:
         inputs = tokenizer(text, return_tensors="pt")
+        inputs = {k: v.to(model.device) for k, v in inputs.items()}
         num_tokens = inputs["input_ids"].shape[1] - 1  # shifted: n-1 next-token predictions
         if num_tokens < 1:
             continue  # a single token has no next-token target; loss would be NaN
@@ -29,9 +30,15 @@ def run_benchmark(config: dict) -> dict:
     import torch
     from transformers import AutoModelForCausalLM, AutoTokenizer
 
+    from src.utils import get_device
+
+    dtype_by_precision = {"fp32": torch.float32, "fp16": torch.float16, "bf16": torch.bfloat16}
+    dtype = dtype_by_precision[config["training"]["precision"]]
+
     model_name = config["model"]["base_model_name"]
     tokenizer = AutoTokenizer.from_pretrained(model_name)
-    model = AutoModelForCausalLM.from_pretrained(model_name, dtype=torch.float32)
+    model = AutoModelForCausalLM.from_pretrained(model_name, dtype=dtype)
+    model.to(get_device())
     model.eval()
 
     splits = load_split_dataset(config)
@@ -62,6 +69,7 @@ def generate_samples(model, tokenizer, prompts: list[str], **generation_kwargs) 
     completions = []
     for prompt in prompts:
         inputs = tokenizer(prompt, return_tensors="pt")
+        inputs = {k: v.to(model.device) for k, v in inputs.items()}
         output = model.generate(
             **inputs,
             pad_token_id=tokenizer.eos_token_id,
@@ -84,6 +92,7 @@ def generate_batch(model, tokenizer, prompts: list[str], **generation_kwargs) ->
         tokenizer.pad_token = tokenizer.eos_token
 
     inputs = tokenizer(prompts, return_tensors="pt", padding=True)
+    inputs = {k: v.to(model.device) for k, v in inputs.items()}
     output = model.generate(
         **inputs,
         pad_token_id=tokenizer.eos_token_id,
