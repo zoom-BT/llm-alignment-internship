@@ -7,11 +7,16 @@ from pathlib import Path
 from src.data import load_split_dataset
 
 
-def compute_perplexity(model, tokenizer, texts: list[str]) -> float:
-    """Compute corpus-level perplexity: exp(mean cross-entropy loss, weighted by token count)."""
+def compute_perplexity(model, tokenizer, texts: list[str], progress_every: int = 0) -> float:
+    """Compute corpus-level perplexity: exp(mean cross-entropy loss, weighted by token count).
+
+    `progress_every` (0 by default, meaning "print nothing") prints "i/N" every that many
+    examples — useful for long, un-instrumented CPU runs where there is otherwise no way to
+    tell whether the loop is almost done or barely started.
+    """
     total_loss = 0.0
     total_tokens = 0
-    for text in texts:
+    for i, text in enumerate(texts):
         inputs = tokenizer(text, return_tensors="pt")
         inputs = {k: v.to(model.device) for k, v in inputs.items()}
         num_tokens = inputs["input_ids"].shape[1] - 1  # shifted: n-1 next-token predictions
@@ -20,6 +25,8 @@ def compute_perplexity(model, tokenizer, texts: list[str]) -> float:
         outputs = model(**inputs, labels=inputs["input_ids"])
         total_loss += outputs.loss.item() * num_tokens
         total_tokens += num_tokens
+        if progress_every and (i + 1) % progress_every == 0:
+            print(f"  {i + 1}/{len(texts)} examples processed...")
     return math.exp(total_loss / total_tokens)
 
 

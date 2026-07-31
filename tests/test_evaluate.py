@@ -126,3 +126,18 @@ def test_compute_perplexity_skips_texts_with_fewer_than_2_tokens():
     ppl = compute_perplexity(ModelWithNaNOnSingleToken(), FakePerplexityTokenizer(), ["a", "bb"])
     assert not math.isnan(ppl)
     assert ppl == math.exp(1.0)
+
+
+def test_compute_perplexity_logs_progress_at_the_requested_interval(capsys):
+    texts = ["aaaa", "bb", "aaaa", "bb"]  # 4 texts
+    compute_perplexity(VariableLossModel(), FakePerplexityTokenizer(), texts, progress_every=2)
+    captured = capsys.readouterr()
+    assert "2/4" in captured.out
+    assert "4/4" in captured.out
+
+
+def test_compute_perplexity_prints_nothing_when_progress_every_is_zero(capsys):
+    texts = ["aaaa", "bb"]
+    compute_perplexity(VariableLossModel(), FakePerplexityTokenizer(), texts)
+    captured = capsys.readouterr()
+    assert captured.out == ""
