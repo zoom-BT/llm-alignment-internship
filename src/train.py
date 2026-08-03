@@ -13,9 +13,16 @@ def run_sft(config: dict, max_steps: int = -1):
     `max_steps` (-1 by default, meaning "run the full `num_epochs`") lets a caller cap the
     run to a handful of steps for a dry run, to check for out-of-memory errors before
     committing to the full training time.
+
+    Week 2 corrections applied here, in response to Week 1's overfitting result
+    (13.92 -> 75.41 perplexity): learning rate lowered an order of magnitude
+    (`2e-4` was tuned for LoRA, not full fine-tuning), a warmup + cosine schedule,
+    and validation-driven early stopping (`eval_steps`, `load_best_model_at_end`,
+    `EarlyStoppingCallback`) so overfitting is caught during training instead of
+    only discovered afterward.
     """
     import torch
-    from transformers import AutoModelForCausalLM, AutoTokenizer
+    from transformers import AutoModelForCausalLM, AutoTokenizer, EarlyStoppingCallback
     from trl import SFTConfig, SFTTrainer
 
     from src.data import format_as_chat_messages, load_split_dataset
@@ -46,11 +53,18 @@ def run_sft(config: dict, max_steps: int = -1):
         num_train_epochs=training_config["num_epochs"],
         max_steps=max_steps,
         learning_rate=training_config["learning_rate"],
+        warmup_ratio=training_config["warmup_ratio"],
+        lr_scheduler_type=training_config["lr_scheduler_type"],
         max_length=training_config["max_seq_length"],
         seed=training_config["seed"],
         report_to=training_config["logging_backend"],
         bf16=(training_config["precision"] == "bf16"),
         fp16=(training_config["precision"] == "fp16"),
+        eval_strategy="steps",
+        eval_steps=training_config["eval_steps"],
+        load_best_model_at_end=True,
+        metric_for_best_model="eval_loss",
+        greater_is_better=False,
     )
 
     trainer = SFTTrainer(
@@ -60,6 +74,9 @@ def run_sft(config: dict, max_steps: int = -1):
         eval_dataset=splits["validation"],
         processing_class=tokenizer,
         formatting_func=formatting_func,
+        callbacks=[
+            EarlyStoppingCallback(early_stopping_patience=training_config["early_stopping_patience"])
+        ],
     )
     trainer.train()
     trainer.save_model(config["paths"]["output_dir"] + "checkpoints/final")

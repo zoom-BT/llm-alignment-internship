@@ -20,11 +20,15 @@ training:
     r: 16
     alpha: 32
     dropout: 0.05
-  learning_rate: 2.0e-4
+  learning_rate: 2.0e-5  # Week 2 correction: 2.0e-4 was an order of magnitude too high for full fine-tuning (caused the Week 1 overfitting: 13.92 -> 75.41); 2e-4 is fine for LoRA (Week 3), not full FT
+  warmup_ratio: 0.03  # Week 2 correction: protects the first steps from the (still nonzero) learning rate before it's had time to warm up
+  lr_scheduler_type: cosine  # Week 2 correction: smooth decay to 0 by the end of training, instead of a flat rate throughout
   batch_size: 4
   gradient_accumulation_steps: 4
   gradient_checkpointing: true
-  num_epochs: 3
+  num_epochs: 3  # Week 2 correction: kept as a ceiling, not a fixed target — early stopping (below) decides the real stopping point
+  eval_steps: 100  # Week 2 correction: how often to check validation loss during training, to catch overfitting as it happens rather than only after
+  early_stopping_patience: 3  # Week 2 correction: stop if validation loss hasn't improved for this many evaluations in a row
   max_seq_length: 512
   logging_backend: tensorboard  # no external account needed; switch to "wandb" once a wandb account/API key is set up
 
