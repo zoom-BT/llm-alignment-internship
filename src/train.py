@@ -5,7 +5,24 @@ git-clone-based sync pattern used to pull this module into a notebook.
 """
 
 import json
+import shutil
 from pathlib import Path
+
+
+def cleanup_checkpoint_dir(checkpoint_dir: str, keep_name: str) -> None:
+    """Remove everything under `checkpoint_dir` except the entry named `keep_name`.
+
+    Handles both files (e.g. a `README.md` `Trainer` writes alongside checkpoints)
+    and directories (intermediate `checkpoint-*` snapshots) — `shutil.rmtree` alone
+    fails on plain files. Safe to call more than once on the same directory.
+    """
+    for entry in Path(checkpoint_dir).iterdir():
+        if entry.name == keep_name:
+            continue
+        if entry.is_dir():
+            shutil.rmtree(entry)
+        else:
+            entry.unlink()
 
 
 def save_training_curves(log_history: list[dict], output_dir: str) -> dict:
