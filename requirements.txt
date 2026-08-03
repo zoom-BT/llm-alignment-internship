@@ -9,6 +9,7 @@ lighteval
 bitsandbytes
 wandb
 tensorboard
+matplotlib
 pyyaml
 pytest
 ruff

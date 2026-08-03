@@ -4,6 +4,48 @@ Meant to run on remote GPUs (Kaggle/Colab); see README.md for the
 git-clone-based sync pattern used to pull this module into a notebook.
 """
 
+import json
+from pathlib import Path
+
+
+def save_training_curves(log_history: list[dict], output_dir: str) -> dict:
+    """Save training/eval loss curves (PNG) and the raw log history (JSON) to `output_dir`.
+
+    `log_history` is `trainer.state.log_history` after `trainer.train()`: a list of dicts,
+    each either a training-step entry (has `loss`) or an evaluation entry (has `eval_loss`).
+    Kept separate from `run_sft` so it can be tested without a real training run.
+    """
+    import matplotlib
+
+    matplotlib.use("Agg")  # headless backend: no display needed, safe for CI/notebooks
+    import matplotlib.pyplot as plt
+
+    output_path = Path(output_dir)
+    output_path.mkdir(parents=True, exist_ok=True)
+
+    train_points = [(entry["step"], entry["loss"]) for entry in log_history if "loss" in entry]
+    eval_points = [
+        (entry["step"], entry["eval_loss"]) for entry in log_history if "eval_loss" in entry
+    ]
+
+    fig, ax = plt.subplots()
+    if train_points:
+        steps, losses = zip(*train_points)
+        ax.plot(steps, losses, label="train_loss")
+    if eval_points:
+        steps, losses = zip(*eval_points)
+        ax.plot(steps, losses, label="eval_loss")
+    ax.set_xlabel("step")
+    ax.set_ylabel("loss")
+    ax.legend()
+    fig.savefig(output_path / "training_curve.png")
+    plt.close(fig)
+
+    with open(output_path / "training_log_history.json", "w") as f:
+        json.dump(log_history, f, indent=2)
+
+    return {"train_points": train_points, "eval_points": eval_points}
+
 
 def run_sft(config: dict, max_steps: int = -1):
     """Run supervised fine-tuning with trl.SFTTrainer, using `config['training']` for hyperparameters.
@@ -80,6 +122,7 @@ def run_sft(config: dict, max_steps: int = -1):
     )
     trainer.train()
     trainer.save_model(config["paths"]["output_dir"] + "checkpoints/final")
+    save_training_curves(trainer.state.log_history, config["paths"]["output_dir"])
     return trainer
 
 
