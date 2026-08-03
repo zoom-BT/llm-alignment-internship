@@ -19,6 +19,11 @@
   - [Paper (arXiv:2305.14314)](https://arxiv.org/abs/2305.14314)
   - *Key concepts:* 4-bit NormalFloat (NF4), Double Quantization, Paged Optimizers.
 
+### Instruction Tuning & Supervised Fine-Tuning (SFT)
+- **Training Language Models to Follow Instructions with Human Feedback (InstructGPT):**
+  - [Paper (arXiv:2203.02155)](https://arxiv.org/abs/2203.02155)
+  - *Key concepts:* Supervised fine-tuning on human demonstrations, reward modeling from preference comparisons, RLHF via PPO — Week 2's required reading.
+
 ### Alignment & Preference Optimization
 - **DPO: Direct Preference Optimization:**
   - [Paper (arXiv:2305.18290)](https://arxiv.org/abs/2305.18290)
