@@ -1,0 +1,8 @@
+{
+  "model": "/kaggle/input/notebooks/balbinotchoutzine/w02-sfttraining-qwen2-5-0-5b/llm-alignment-internship/results/checkpoints/final",
+  "dataset": "databricks/databricks-dolly-15k",
+  "metric": "perplexity",
+  "split": "test",
+  "num_examples": 1502,
+  "perplexity": 14.607645918492269
+}
