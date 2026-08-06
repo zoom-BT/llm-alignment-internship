@@ -7,7 +7,7 @@
 - [ ] Table of hyperparameters (Week 1 recipe vs. Week 2 corrected recipe, side by side)
 - [ ] Training and validation curves (TensorBoard — this time with real `eval_loss` tracked during training, not just after)
 - [x] Comparison of the model before and after fine-tuning (baseline = 13.92; success = below 13.92, not "beat 75.41") — **result: 14.61**. Corrections fixed the overfitting (75.41 -> 14.61) but did not beat the baseline. Decision: stop here, document honestly, defer loss masking (investigation avenue #2 below) rather than chase it this week.
-- [ ] Error analysis (qualitative review of ≥20 generated examples: failures, regressions, unexpected behaviors)
+- [x] Error analysis (qualitative review of ≥20 generated examples: failures, regressions, unexpected behaviors) — see [`Week_02_Error_Analysis.md`](../04_Weekly_Reports/Week_02_Error_Analysis.md)
 
 ---
 
