@@ -1,0 +1,30 @@
+Build me a presentation (with diagrams) explaining the InstructGPT paper — "Training language models to follow instructions with human feedback" (Ouyang et al., 2022, arXiv:2203.02155) — for my ML research internship supervisor, to demonstrate that I genuinely understood it, not just skimmed it. Audience: one technical supervisor, informal oral defense setting, not a conference talk. Language: English, with occasional French where a French phrase says it more naturally for me as a non-native speaker — don't force full bilingual duplication, just sprinkle it in.
+
+Structure the presentation as follows:
+
+**1. The problem (1 slide).** Pretrained LMs optimize next-token prediction on internet text — a proxy objective different from "follow the user's instruction, helpfully and safely." This gap is called misalignment. Desired behavior = HHH (Helpful, Honest, Harmless — Askell et al., 2021).
+
+**2. The method — 3-step pipeline (1-2 slides, needs a clear diagram).** Draw the pipeline as a flowchart/tree: GPT-3 pretrained → SFT (fine-tune on labeler demonstrations) → branches into RM (SFT model, final layer swapped for a scalar reward output, trained on labeler rankings of K=4-9 responses) and separately RL/PPO (also starts from SFT, guided by the RM, with a KL penalty against SFT to prevent reward hacking). Show that RM and PPO both branch from SFT, not from raw GPT-3 directly — this is a common point of confusion worth making visually explicit.
+
+**3. The math (1-2 slides) — I need to be able to defend these formulas if questioned:**
+- RM loss: `loss(θ) = −(1/C(K,2)) · E[log(σ(rθ(x,yw) − rθ(x,yl)))]` — a Bradley-Terry pairwise ranking loss. Show the equivalence `σ(rw−rl) = e^rw/(e^rw+e^rl)`. Explain in plain language: push the reward model to score the human-preferred response higher than the rejected one, log-likelihood framing, same family as cross-entropy.
+- PPO objective: `objective(φ) = E[rθ(x,y) − β·log(π_RL(y|x)/π_SFT(y|x))] + γ·E[log(π_RL(x))]` — reward from the RM, minus a KL penalty against the frozen SFT policy, plus an optional pretraining-data mixing term (PPO-ptx, γ>0) that fixes the "alignment tax." Explain each symbol (φ, π_RL, π_SFT, β, γ) plainly.
+- Compute cost table: SFT-175B = 4.9 petaflops/s-days, PPO-ptx-175B = 60, vs. GPT-3 pretraining = 3,640 — alignment costs ~1.6% of pretraining, yet beats a 100x model-size increase in human preference. This is a strong, concrete slide — make the contrast visually obvious (e.g., a bar chart with a log scale, since the numbers span 3 orders of magnitude).
+
+**4. Key results (1-2 slides, diagram-friendly):**
+- 1.3B InstructGPT preferred over 175B GPT-3 despite 100x fewer parameters (same architecture, only training differs) — 85±3% preference at matched 175B size.
+- TruthfulQA: ~2x more truthful/informative answers; calibration improvement (model says "I have no comment" instead of confidently guessing, when given permission to).
+- Toxicity: ~-25%, but ONLY when explicitly prompted to be respectful — no default improvement otherwise. No improvement on bias at all.
+- Alignment tax on classic NLP benchmarks (SQuAD, DROP, HellaSwag, WMT), mostly (not fully) fixed by PPO-ptx.
+- A genuinely counter-intuitive finding worth a dedicated slide: on their own hallucination metric, plain SFT actually hallucinates LESS than PPO/PPO-ptx — likely because SFT imitates grounded human-written text directly, while PPO optimizes against an imperfect reward model that may reward "sounding complete" over strict factual accuracy (reward hacking). Frame this as evidence that RLHF isn't strictly better on every axis.
+
+**5. Limitations & who are we aligning to (1 slide, important for critical thinking credit).** The model is aligned to ~40 English-speaking US/Southeast-Asia contractors, guided by OpenAI researchers' own instructions, trained on a non-representative customer base. Most serious safety limitation: InstructGPT follows harmful instructions TOO well — prompted to be "maximally biased," it produces MORE toxic output than raw GPT-3 of the same size. Better instruction-following is not the same as being safer.
+
+**6. My own replication at small scale (1 slide — this is the most important slide for demonstrating real understanding, not just paper summary).** During Week 2 of my internship, I fine-tuned Qwen2.5-0.5B via SFT only (no RLHF) on databricks-dolly-15k, and independently reproduced two of this paper's core patterns in my own 20-example qualitative review:
+   - Style learned without knowledge gained: asked "What are the words of House Tyrell?" — my fine-tuned model answered in the correct terse, quoted-motto FORMAT ("Never Give Up") but with the wrong FACT (correct answer: "Growing Strong"). Same style-vs-knowledge distinction InstructGPT documents.
+   - Residual degeneration: my model still produced repetition loops on 2/20 examples despite fixing Week 1's catastrophic overfitting — echoing InstructGPT's own "still makes simple mistakes" section. My test perplexity (14.61) stayed slightly above my baseline (13.92), partly explained by these degenerate completions.
+   Frame this slide as: "the paper's findings aren't just abstract results at GPT-3 scale — I saw the same phenomena appear in my own much smaller, independent experiment."
+
+**7. One-sentence closing takeaway.** RLHF is a cheap way to reshape a model's behavior/style toward a chosen reference group's preferences — it doesn't add knowledge, doesn't guarantee safety, and doesn't resolve whose preferences should count. It's exactly what SFT (which I've implemented) is step 1 of, and a preview of the DPO stub already sitting unfinished in my own codebase for a later week.
+
+Design preference: clean, diagram-forward, not text-heavy slides — I'll be talking over them, so bullet points should be short prompts for me, not full sentences I'd just read aloud. Use a flowchart for the pipeline (section 2), a labeled-term breakdown for the formulas (section 3), and simple bar/comparison charts for the results (section 4). Keep the overall deck to roughly 8-10 slides.

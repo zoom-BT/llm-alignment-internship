@@ -1,7 +1,7 @@
 # 🎯 Week 2: Supervised Fine-Tuning and Instruction Tuning
 
 ## 📥 Deliverables Checklist (Due: Friday)
-- [ ] Reading note on instruction tuning (InstructGPT — `06_Reading_Notes/`)
+- [x] Reading note on instruction tuning (InstructGPT — `06_Reading_Notes/InstructGPT.md`)
 - [ ] Dataset / dataset-preparation script (reused: databricks-dolly-15k via `src/data.py` — no change needed, protocol requires it stays identical to Week 1)
 - [ ] Supervised fine-tuning scripts (`src/train.py`, corrected: learning rate, LR schedule, early stopping, loss masking)
 - [ ] Table of hyperparameters (Week 1 recipe vs. Week 2 corrected recipe, side by side)
