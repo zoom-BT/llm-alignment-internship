@@ -1,6 +1,20 @@
 import json
 
-from src.train import cleanup_checkpoint_dir, save_training_curves
+from src.train import build_peft_config, cleanup_checkpoint_dir, save_training_curves
+
+
+def test_build_peft_config_returns_none_for_full_finetune():
+    training_config = {"full_finetune": True, "lora": {"r": 16, "alpha": 32, "dropout": 0.05}}
+    assert build_peft_config(training_config) is None
+
+
+def test_build_peft_config_returns_lora_config_with_configured_values():
+    training_config = {"full_finetune": False, "lora": {"r": 16, "alpha": 32, "dropout": 0.05}}
+    peft_config = build_peft_config(training_config)
+    assert peft_config.r == 16
+    assert peft_config.lora_alpha == 32
+    assert peft_config.lora_dropout == 0.05
+    assert peft_config.task_type == "CAUSAL_LM"
 
 
 def test_save_training_curves_creates_png_and_json(tmp_path):

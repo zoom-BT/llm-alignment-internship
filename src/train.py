@@ -64,6 +64,25 @@ def save_training_curves(log_history: list[dict], output_dir: str) -> dict:
     return {"train_points": train_points, "eval_points": eval_points}
 
 
+def build_peft_config(training_config: dict):
+    """Return a `peft.LoraConfig` built from `training_config['lora']`, or `None` for full fine-tuning.
+
+    Kept separate from `run_sft` so the LoRA/full-finetune switch is testable without a real model.
+    """
+    if training_config["full_finetune"]:
+        return None
+
+    from peft import LoraConfig
+
+    lora_config = training_config["lora"]
+    return LoraConfig(
+        r=lora_config["r"],
+        lora_alpha=lora_config["alpha"],
+        lora_dropout=lora_config["dropout"],
+        task_type="CAUSAL_LM",
+    )
+
+
 def run_sft(config: dict, max_steps: int = -1):
     """Run supervised fine-tuning with trl.SFTTrainer, using `config['training']` for hyperparameters.
 
@@ -133,6 +152,7 @@ def run_sft(config: dict, max_steps: int = -1):
         eval_dataset=splits["validation"],
         processing_class=tokenizer,
         formatting_func=formatting_func,
+        peft_config=build_peft_config(training_config),
         callbacks=[
             EarlyStoppingCallback(early_stopping_patience=training_config["early_stopping_patience"])
         ],
