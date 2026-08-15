@@ -32,6 +32,15 @@ training:
   max_seq_length: 512
   logging_backend: tensorboard  # no external account needed; switch to "wandb" once a wandb account/API key is set up
 
+dpo:
+  dataset_name: "trl-lib/ultrafeedback_binarized"  # Week 3: general-domain preference pairs, already in chosen/rejected format
+  train_size: 1000  # small subset per the contract's "small DPO experiment" — full dataset is 62k pairs
+  eval_size: 100
+  beta: 0.1  # KL penalty strength against the frozen reference model (same beta as the PPO/DPO math)
+  learning_rate: 5.0e-6  # DPO fine-tunes an already-instruction-tuned checkpoint; smaller than SFT's LR to avoid undoing that tuning
+  num_epochs: 1
+  eval_steps: 20
+
 eval:
   benchmarks: []
 

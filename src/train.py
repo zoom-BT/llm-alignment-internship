@@ -207,6 +207,63 @@ def run_sft(config: dict, max_steps: int = -1):
     return trainer
 
 
-def run_dpo(config: dict):
-    """Run DPO/ORPO alignment using trl per `config['training']`."""
-    raise NotImplementedError("Wire up once a reference SFT checkpoint exists.")
+def run_dpo(config: dict, model_path: str | None = None, max_steps: int = -1):
+    """Run DPO alignment with `trl.DPOTrainer`, using `config['dpo']` for hyperparameters.
+
+    `model_path` (defaults to `config['model']['base_model_name']`) is the checkpoint to
+    start from — normally an already-SFT'd model, since DPO's theory assumes a reference
+    policy `pi_ref` that already follows instructions reasonably well. Passing
+    `ref_model=None` to `DPOTrainer` makes it create its own frozen copy of the starting
+    model internally as `pi_ref`, matching that theory exactly.
+    """
+    import torch
+    from datasets import load_dataset
+    from transformers import AutoModelForCausalLM, AutoTokenizer
+    from trl import DPOConfig, DPOTrainer
+
+    from src.utils import get_device, set_seed
+
+    training_config = config["training"]
+    dpo_config_values = config["dpo"]
+    set_seed(training_config["seed"])
+
+    dtype_by_precision = {"fp32": torch.float32, "fp16": torch.float16, "bf16": torch.bfloat16}
+    dtype = dtype_by_precision[training_config["precision"]]
+
+    model_name = model_path or config["model"]["base_model_name"]
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model = AutoModelForCausalLM.from_pretrained(model_name, dtype=dtype)
+    model.to(get_device())
+
+    train_dataset = load_dataset(dpo_config_values["dataset_name"], split="train")
+    train_dataset = train_dataset.select(range(dpo_config_values["train_size"]))
+    eval_dataset = load_dataset(dpo_config_values["dataset_name"], split="test")
+    eval_dataset = eval_dataset.select(range(dpo_config_values["eval_size"]))
+
+    dpo_args = DPOConfig(
+        output_dir=config["paths"]["output_dir"] + "dpo_checkpoints",
+        beta=dpo_config_values["beta"],
+        num_train_epochs=dpo_config_values["num_epochs"],
+        max_steps=max_steps,
+        learning_rate=dpo_config_values["learning_rate"],
+        max_length=training_config["max_seq_length"],
+        seed=training_config["seed"],
+        report_to=training_config["logging_backend"],
+        bf16=(training_config["precision"] == "bf16"),
+        fp16=(training_config["precision"] == "fp16"),
+        eval_strategy="steps",
+        eval_steps=dpo_config_values["eval_steps"],
+    )
+
+    trainer = DPOTrainer(
+        model=model,
+        ref_model=None,
+        args=dpo_args,
+        train_dataset=train_dataset,
+        eval_dataset=eval_dataset,
+        processing_class=tokenizer,
+    )
+    trainer.train()
+    trainer.save_model(config["paths"]["output_dir"] + "dpo_checkpoints/final")
+    save_training_curves(trainer.state.log_history, config["paths"]["output_dir"] + "dpo")
+    return trainer
