@@ -5,6 +5,7 @@ git-clone-based sync pattern used to pull this module into a notebook.
 """
 
 import json
+import math
 import shutil
 from pathlib import Path
 
@@ -40,9 +41,13 @@ def save_training_curves(log_history: list[dict], output_dir: str) -> dict:
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
 
-    train_points = [(entry["step"], entry["loss"]) for entry in log_history if "loss" in entry]
+    train_points = [
+        (entry["step"], entry["loss"]) for entry in log_history if "loss" in entry
+    ]
     eval_points = [
-        (entry["step"], entry["eval_loss"]) for entry in log_history if "eval_loss" in entry
+        (entry["step"], entry["eval_loss"])
+        for entry in log_history
+        if "eval_loss" in entry
     ]
 
     fig, ax = plt.subplots()
@@ -83,6 +88,30 @@ def build_peft_config(training_config: dict):
     )
 
 
+def compute_warmup_steps(
+    dataset_size: int,
+    batch_size: int,
+    gradient_accumulation_steps: int,
+    num_epochs: int,
+    warmup_ratio: float,
+    max_steps: int = -1,
+) -> int:
+    """Convert a warmup *ratio* into an absolute step count.
+
+    Newer `trl` versions dropped `SFTConfig`'s `warmup_ratio` parameter in favor of
+    `warmup_steps` only, which needs the total optimizer-step count computed up front
+    to stay proportional. Mirrors `Trainer`'s own rule: `max_steps` (when set) overrides
+    epoch-based counting entirely rather than being combined with it.
+    """
+    if max_steps > 0:
+        total_steps = max_steps
+    else:
+        effective_batch_size = batch_size * gradient_accumulation_steps
+        steps_per_epoch = math.ceil(dataset_size / effective_batch_size)
+        total_steps = steps_per_epoch * num_epochs
+    return int(total_steps * warmup_ratio)
+
+
 def run_sft(config: dict, max_steps: int = -1):
     """Run supervised fine-tuning with trl.SFTTrainer, using `config['training']` for hyperparameters.
 
@@ -109,7 +138,11 @@ def run_sft(config: dict, max_steps: int = -1):
     training_config = config["training"]
     set_seed(training_config["seed"])
 
-    dtype_by_precision = {"fp32": torch.float32, "fp16": torch.float16, "bf16": torch.bfloat16}
+    dtype_by_precision = {
+        "fp32": torch.float32,
+        "fp16": torch.float16,
+        "bf16": torch.bfloat16,
+    }
     dtype = dtype_by_precision[training_config["precision"]]
 
     model_name = config["model"]["base_model_name"]
@@ -123,6 +156,15 @@ def run_sft(config: dict, max_steps: int = -1):
         messages = format_as_chat_messages(example)
         return tokenizer.apply_chat_template(messages, tokenize=False)
 
+    warmup_steps = compute_warmup_steps(
+        dataset_size=len(splits["train"]),
+        batch_size=training_config["batch_size"],
+        gradient_accumulation_steps=training_config["gradient_accumulation_steps"],
+        num_epochs=training_config["num_epochs"],
+        warmup_ratio=training_config["warmup_ratio"],
+        max_steps=max_steps,
+    )
+
     sft_args = SFTConfig(
         output_dir=config["paths"]["output_dir"] + "checkpoints",
         per_device_train_batch_size=training_config["batch_size"],
@@ -131,7 +173,7 @@ def run_sft(config: dict, max_steps: int = -1):
         num_train_epochs=training_config["num_epochs"],
         max_steps=max_steps,
         learning_rate=training_config["learning_rate"],
-        warmup_ratio=training_config["warmup_ratio"],
+        warmup_steps=warmup_steps,
         lr_scheduler_type=training_config["lr_scheduler_type"],
         max_length=training_config["max_seq_length"],
         seed=training_config["seed"],
@@ -154,7 +196,9 @@ def run_sft(config: dict, max_steps: int = -1):
         formatting_func=formatting_func,
         peft_config=build_peft_config(training_config),
         callbacks=[
-            EarlyStoppingCallback(early_stopping_patience=training_config["early_stopping_patience"])
+            EarlyStoppingCallback(
+                early_stopping_patience=training_config["early_stopping_patience"]
+            )
         ],
     )
     trainer.train()
