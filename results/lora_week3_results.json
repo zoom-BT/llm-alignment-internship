@@ -1,0 +1,8 @@
+{
+  "model": "results/checkpoints/final_merged",
+  "dataset": "databricks/databricks-dolly-15k",
+  "metric": "perplexity",
+  "split": "test",
+  "num_examples": 1502,
+  "perplexity": 13.795371649585737
+}
