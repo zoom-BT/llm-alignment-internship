@@ -242,6 +242,10 @@ def run_dpo(config: dict, model_path: str | None = None, max_steps: int = -1):
 
     dpo_args = DPOConfig(
         output_dir=config["paths"]["output_dir"] + "dpo_checkpoints",
+        per_device_train_batch_size=dpo_config_values["batch_size"],
+        per_device_eval_batch_size=dpo_config_values["batch_size"],
+        gradient_accumulation_steps=dpo_config_values["gradient_accumulation_steps"],
+        gradient_checkpointing=dpo_config_values["gradient_checkpointing"],
         beta=dpo_config_values["beta"],
         num_train_epochs=dpo_config_values["num_epochs"],
         max_steps=max_steps,

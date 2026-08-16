@@ -40,6 +40,9 @@ dpo:
   learning_rate: 5.0e-6  # DPO fine-tunes an already-instruction-tuned checkpoint; smaller than SFT's LR to avoid undoing that tuning
   num_epochs: 1
   eval_steps: 20
+  batch_size: 2  # smaller than SFT's 4: DPO runs both the policy AND the frozen reference model per example, roughly doubling memory use per sample
+  gradient_accumulation_steps: 8  # compensates for the smaller batch_size to keep the same effective batch size (2*8=16) as a reasonable default
+  gradient_checkpointing: true
 
 eval:
   benchmarks: []
