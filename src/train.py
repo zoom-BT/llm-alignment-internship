@@ -295,10 +295,13 @@ def run_orpo(config: dict, model_path: str | None = None, max_steps: int = -1):
     set_seed(training_config["seed"])
 
     # bf16 needs no gradient scaling (same exponent range as fp32), so loading the model
-    # directly in bf16 is safe. fp16 training via Trainer's built-in mixed precision
-    # (autocast + GradScaler) expects fp32 master weights -- loading the model directly in
-    # fp16 breaks GradScaler ("Attempting to unscale FP16 gradients").
-    dtype = torch.bfloat16 if training_config["precision"] == "bf16" else torch.float32
+    # directly in bf16 is safe, and Trainer's bf16=True flag works with it directly. For
+    # fp16, loading the model in fp32 and letting Trainer's fp16=True autocast+GradScaler
+    # handle it still hit "Attempting to unscale FP16 gradients" (likely a gradient-
+    # checkpointing interaction) -- so instead the model is loaded directly in fp16 (memory-
+    # efficient, matches T4's actual strength) and Trainer's own scaler is left off entirely
+    # (fp16 flag below stays False even in the fp16 case) rather than fought with further.
+    dtype = torch.bfloat16 if training_config["precision"] == "bf16" else torch.float16
 
     model_name = model_path or config["model"]["base_model_name"]
     tokenizer = AutoTokenizer.from_pretrained(model_name)
@@ -324,7 +327,7 @@ def run_orpo(config: dict, model_path: str | None = None, max_steps: int = -1):
         seed=training_config["seed"],
         report_to=training_config["logging_backend"],
         bf16=(training_config["precision"] == "bf16"),
-        fp16=(training_config["precision"] == "fp16"),
+        fp16=False,  # model is already loaded in fp16 directly when precision=="fp16"; Trainer's own fp16 flag would add GradScaler on top and conflict with it
         eval_strategy="steps",
         eval_steps=orpo_config_values["eval_steps"],
     )
