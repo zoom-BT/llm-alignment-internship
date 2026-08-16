@@ -294,8 +294,11 @@ def run_orpo(config: dict, model_path: str | None = None, max_steps: int = -1):
     orpo_config_values = config["orpo"]
     set_seed(training_config["seed"])
 
-    dtype_by_precision = {"fp32": torch.float32, "fp16": torch.float16, "bf16": torch.bfloat16}
-    dtype = dtype_by_precision[training_config["precision"]]
+    # bf16 needs no gradient scaling (same exponent range as fp32), so loading the model
+    # directly in bf16 is safe. fp16 training via Trainer's built-in mixed precision
+    # (autocast + GradScaler) expects fp32 master weights -- loading the model directly in
+    # fp16 breaks GradScaler ("Attempting to unscale FP16 gradients").
+    dtype = torch.bfloat16 if training_config["precision"] == "bf16" else torch.float32
 
     model_name = model_path or config["model"]["base_model_name"]
     tokenizer = AutoTokenizer.from_pretrained(model_name)
