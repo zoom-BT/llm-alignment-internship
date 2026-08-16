@@ -271,3 +271,69 @@ def run_dpo(config: dict, model_path: str | None = None, max_steps: int = -1):
     trainer.save_model(config["paths"]["output_dir"] + "dpo_checkpoints/final")
     save_training_curves(trainer.state.log_history, config["paths"]["output_dir"] + "dpo")
     return trainer
+
+
+def run_orpo(config: dict, model_path: str | None = None, max_steps: int = -1):
+    """Run ORPO alignment with `trl.experimental.orpo.ORPOTrainer`, using `config['orpo']`.
+
+    Unlike DPO, ORPO needs no separate reference model: its loss combines the standard SFT
+    cross-entropy (on the chosen response) with an odds-ratio preference term computed
+    entirely from the model being trained, so only one model copy is ever resident in
+    memory. ORPOConfig names the odds-ratio term's weight `beta`, even though it plays the
+    role the ORPO paper calls lambda -- unrelated to DPO's KL-penalty beta despite the
+    shared field name.
+    """
+    import torch
+    from datasets import load_dataset
+    from transformers import AutoModelForCausalLM, AutoTokenizer
+    from trl.experimental.orpo import ORPOConfig, ORPOTrainer
+
+    from src.utils import get_device, set_seed
+
+    training_config = config["training"]
+    orpo_config_values = config["orpo"]
+    set_seed(training_config["seed"])
+
+    dtype_by_precision = {"fp32": torch.float32, "fp16": torch.float16, "bf16": torch.bfloat16}
+    dtype = dtype_by_precision[training_config["precision"]]
+
+    model_name = model_path or config["model"]["base_model_name"]
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model = AutoModelForCausalLM.from_pretrained(model_name, dtype=dtype)
+    model.to(get_device())
+
+    train_dataset = load_dataset(orpo_config_values["dataset_name"], split="train")
+    train_dataset = train_dataset.select(range(orpo_config_values["train_size"]))
+    eval_dataset = load_dataset(orpo_config_values["dataset_name"], split="test")
+    eval_dataset = eval_dataset.select(range(orpo_config_values["eval_size"]))
+
+    orpo_args = ORPOConfig(
+        output_dir=config["paths"]["output_dir"] + "orpo_checkpoints",
+        per_device_train_batch_size=orpo_config_values["batch_size"],
+        per_device_eval_batch_size=orpo_config_values["batch_size"],
+        gradient_accumulation_steps=orpo_config_values["gradient_accumulation_steps"],
+        gradient_checkpointing=orpo_config_values["gradient_checkpointing"],
+        beta=orpo_config_values["lambda_orpo"],
+        num_train_epochs=orpo_config_values["num_epochs"],
+        max_steps=max_steps,
+        learning_rate=orpo_config_values["learning_rate"],
+        max_length=training_config["max_seq_length"],
+        seed=training_config["seed"],
+        report_to=training_config["logging_backend"],
+        bf16=(training_config["precision"] == "bf16"),
+        fp16=(training_config["precision"] == "fp16"),
+        eval_strategy="steps",
+        eval_steps=orpo_config_values["eval_steps"],
+    )
+
+    trainer = ORPOTrainer(
+        model=model,
+        args=orpo_args,
+        train_dataset=train_dataset,
+        eval_dataset=eval_dataset,
+        processing_class=tokenizer,
+    )
+    trainer.train()
+    trainer.save_model(config["paths"]["output_dir"] + "orpo_checkpoints/final")
+    save_training_curves(trainer.state.log_history, config["paths"]["output_dir"] + "orpo")
+    return trainer

@@ -44,6 +44,18 @@ dpo:
   gradient_accumulation_steps: 8  # compensates for the smaller batch_size to keep the same effective batch size (2*8=16) as a reasonable default
   gradient_checkpointing: true
 
+orpo:
+  dataset_name: "trl-lib/ultrafeedback_binarized"  # same preference dataset as DPO, for a fair method-vs-method comparison
+  train_size: 1000
+  eval_size: 100
+  lambda_orpo: 0.1  # the ORPO paper's lambda (odds-ratio term weight); trl names this field "beta" in ORPOConfig, unrelated to DPO's KL-penalty beta despite the shared name
+  learning_rate: 5.0e-6
+  num_epochs: 1
+  eval_steps: 20
+  batch_size: 4  # no reference model to keep resident (unlike DPO), so the full SFT-sized batch fits
+  gradient_accumulation_steps: 4
+  gradient_checkpointing: true
+
 eval:
   benchmarks: []
 
