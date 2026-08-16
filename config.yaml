@@ -52,8 +52,8 @@ orpo:
   learning_rate: 5.0e-6
   num_epochs: 1
   eval_steps: 20
-  batch_size: 4  # no reference model to keep resident (unlike DPO), so the full SFT-sized batch fits
-  gradient_accumulation_steps: 4
+  batch_size: 2  # no second resident model (unlike DPO), but each example still runs BOTH chosen and rejected through the model, roughly doubling per-example cost versus plain SFT
+  gradient_accumulation_steps: 8
   gradient_checkpointing: true
 
 eval:
