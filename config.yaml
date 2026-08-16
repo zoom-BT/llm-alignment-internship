@@ -49,11 +49,11 @@ orpo:
   train_size: 1000
   eval_size: 100
   lambda_orpo: 0.1  # the ORPO paper's lambda (odds-ratio term weight); trl names this field "beta" in ORPOConfig, unrelated to DPO's KL-penalty beta despite the shared name
-  learning_rate: 5.0e-6
+  learning_rate: 1.0e-6  # lowered from 5e-6 after NaN loss appeared within the first 20 steps -- likely log(odds) overflow (odds=P/(1-P) blows up as P->1) training from the raw base model, not yet stabilized
   num_epochs: 1
   eval_steps: 20
-  batch_size: 2  # no second resident model (unlike DPO), but each example still runs BOTH chosen and rejected through the model, roughly doubling per-example cost versus plain SFT
-  gradient_accumulation_steps: 8
+  batch_size: 1  # still OOM'd at 2 even after fixing fragmentation -- a genuine capacity ceiling, not just fragmentation
+  gradient_accumulation_steps: 16
   gradient_checkpointing: true
 
 eval:
