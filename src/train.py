@@ -88,6 +88,28 @@ def build_peft_config(training_config: dict):
     )
 
 
+def build_quantization_config(training_config: dict):
+    """Return a `transformers.BitsAndBytesConfig` for 4-bit (QLoRA) loading, or `None`.
+
+    Kept separate from `run_sft` so the QLoRA switch is testable without a real model,
+    same pattern as `build_peft_config`. NF4 (not uniform 4-bit) since network weights are
+    roughly normally distributed; double quantization also compresses the per-block scaling
+    constants themselves, not just the weights.
+    """
+    if not training_config.get("load_in_4bit", False):
+        return None
+
+    import torch
+    from transformers import BitsAndBytesConfig
+
+    return BitsAndBytesConfig(
+        load_in_4bit=True,
+        bnb_4bit_quant_type="nf4",
+        bnb_4bit_use_double_quant=True,
+        bnb_4bit_compute_dtype=torch.bfloat16,
+    )
+
+
 def compute_warmup_steps(
     dataset_size: int,
     batch_size: int,
@@ -147,8 +169,20 @@ def run_sft(config: dict, max_steps: int = -1):
 
     model_name = config["model"]["base_model_name"]
     tokenizer = AutoTokenizer.from_pretrained(model_name)
-    model = AutoModelForCausalLM.from_pretrained(model_name, dtype=dtype)
-    model.to(get_device())
+
+    quantization_config = build_quantization_config(training_config)
+    if quantization_config is None:
+        model = AutoModelForCausalLM.from_pretrained(model_name, dtype=dtype)
+        model.to(get_device())
+    else:
+        # 4-bit (QLoRA) layers manage their own device placement via bitsandbytes;
+        # device_map replaces the usual model.to(device) call for this path.
+        from peft import prepare_model_for_kbit_training
+
+        model = AutoModelForCausalLM.from_pretrained(
+            model_name, dtype=dtype, quantization_config=quantization_config, device_map={"": 0}
+        )
+        model = prepare_model_for_kbit_training(model)
 
     splits = load_split_dataset(config)
 

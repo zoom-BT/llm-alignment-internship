@@ -2,10 +2,29 @@ import json
 
 from src.train import (
     build_peft_config,
+    build_quantization_config,
     cleanup_checkpoint_dir,
     compute_warmup_steps,
     save_training_curves,
 )
+
+
+def test_build_quantization_config_returns_none_when_load_in_4bit_false():
+    training_config = {"load_in_4bit": False}
+    assert build_quantization_config(training_config) is None
+
+
+def test_build_quantization_config_returns_none_when_key_missing():
+    training_config = {}
+    assert build_quantization_config(training_config) is None
+
+
+def test_build_quantization_config_returns_nf4_double_quant_config():
+    training_config = {"load_in_4bit": True}
+    quantization_config = build_quantization_config(training_config)
+    assert quantization_config.load_in_4bit is True
+    assert quantization_config.bnb_4bit_quant_type == "nf4"
+    assert quantization_config.bnb_4bit_use_double_quant is True
 
 
 def test_compute_warmup_steps_uses_max_steps_when_given():

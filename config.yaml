@@ -16,6 +16,7 @@ training:
   seed: 42
   precision: bf16
   full_finetune: true  # Week 1: full fine-tuning, small enough model to afford it; LoRA/QLoRA start in Week 3
+  load_in_4bit: false  # Week 3: set true (with full_finetune: false) for QLoRA -- 4-bit NF4 base weights + full-precision LoRA adapters
   lora:
     r: 16
     alpha: 32
