@@ -7,6 +7,7 @@ env/
 
 # Secrets
 .env
+kaggle.json
 
 # Obsidian local config
 .obsidian/
