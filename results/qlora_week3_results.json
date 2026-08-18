@@ -1,0 +1,8 @@
+{
+  "model": "Qwen/Qwen2.5-0.5B + QLoRA adapter (r=16, NF4 base)",
+  "dataset": "databricks/databricks-dolly-15k",
+  "metric": "perplexity",
+  "split": "test",
+  "num_examples": 1502,
+  "perplexity": 16.841899745261482
+}
