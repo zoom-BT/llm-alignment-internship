@@ -27,5 +27,41 @@
   {"id": 18, "region": "control", "category": "historical_event_year", "question": "In what year did the Khmer Rouge take power in Cambodia, beginning the mass killings?", "ground_truth": "1975"},
 
   {"id": 19, "region": "africa", "category": "largest_by_population", "question": "Which African country has the largest population?", "ground_truth": "Nigeria"},
-  {"id": 20, "region": "control", "category": "largest_by_population", "question": "Which South American country has the largest population?", "ground_truth": "Brazil"}
+  {"id": 20, "region": "control", "category": "largest_by_population", "question": "Which South American country has the largest population?", "ground_truth": "Brazil"},
+
+  {"id": 21, "region": "africa", "category": "institution_founding", "question": "In what year did Cameroon's University of Yaoundé split into University of Yaoundé I and University of Yaoundé II?", "ground_truth": "1993 (the university itself opened in 1962)", "source_url": "https://en.wikipedia.org/wiki/University_of_Yaound%C3%A9"},
+  {"id": 22, "region": "control", "category": "institution_founding", "question": "In what year was the University of Paris reorganized into the separate universities Paris I through Paris XIII?", "ground_truth": "1970-1971", "source_url": "https://www.britannica.com/topic/Universities-of-Paris-I-XIII"},
+
+  {"id": 23, "region": "africa", "category": "first_leader", "question": "Who became the first President of independent Cameroon in 1960?", "ground_truth": "Ahmadou Ahidjo", "source_url": "https://www.britannica.com/biography/Ahmadou-Ahidjo"},
+  {"id": 24, "region": "control", "category": "first_leader", "question": "Who was the first President of Syria after independence from France?", "ground_truth": "Shukri al-Quwatli (elected 1943)", "source_url": "https://www.britannica.com/biography/Shukri-al-Quwatli"},
+
+  {"id": 25, "region": "africa", "category": "colonial_conference", "question": "In what months/years did the Berlin Conference on the partition of Africa take place?", "ground_truth": "November 1884 to February 1885 (concluded 26 February 1885)", "source_url": "https://www.britannica.com/event/Berlin-West-Africa-Conference"},
+  {"id": 26, "region": "control", "category": "great_power_conference", "question": "In what year did the Yalta Conference, where the Allied powers planned the post-war division of Germany, take place?", "ground_truth": "1945 (February 4-11)", "source_url": "https://www.britannica.com/event/Yalta-Conference"},
+
+  {"id": 27, "region": "africa", "category": "institution_hq", "question": "In which city is the African Development Bank headquartered?", "ground_truth": "Abidjan, Cote d'Ivoire", "source_url": "https://www.afdb.org/en/contacts"},
+  {"id": 28, "region": "control", "category": "institution_hq", "question": "In which city is the Asian Development Bank headquartered?", "ground_truth": "Mandaluyong, Metro Manila, Philippines", "source_url": "https://en.wikipedia.org/wiki/Asian_Development_Bank"},
+
+  {"id": 29, "region": "africa", "category": "regional_org_first_leader", "question": "Who was the first Secretary-General of the Organisation of African Unity (OAU)?", "ground_truth": "Kifle Wodajo (1963-1964)", "source_url": "https://en.wikipedia.org/wiki/Secretary_General_of_the_Organisation_of_African_Unity"},
+  {"id": 30, "region": "control", "category": "regional_org_first_leader", "question": "Who was the first Secretary-General of ASEAN?", "ground_truth": "Hartono Rekso Dharsono (1976-1978)", "source_url": "https://en.wikipedia.org/wiki/Secretary-General_of_ASEAN"},
+
+  {"id": 31, "region": "africa", "category": "civil_war_end", "question": "In what year did the Nigerian Civil War (Biafra secession) end?", "ground_truth": "1970 (Biafra surrendered 13 January 1970)", "source_url": "https://www.britannica.com/topic/Nigerian-civil-war"},
+  {"id": 32, "region": "control", "category": "civil_war_end", "question": "In what year did the Bangladesh Liberation War end, with Pakistani forces surrendering?", "ground_truth": "1971 (16 December 1971)", "source_url": "https://www.britannica.com/event/Bangladesh-Liberation-War"},
+
+  {"id": 33, "region": "africa", "category": "regional_org_founding", "question": "In what year was ECOWAS (Economic Community of West African States) founded?", "ground_truth": "1975 (28 May, Treaty of Lagos)", "source_url": "https://www.ecowas.int/creation-history/"},
+  {"id": 34, "region": "control", "category": "regional_org_founding", "question": "In what year was Mercosur founded (Treaty of Asuncion)?", "ground_truth": "1991 (26 March)", "source_url": "https://en.wikipedia.org/wiki/Treaty_of_Asunci%C3%B3n"},
+
+  {"id": 35, "region": "africa", "category": "insurgency_leader", "question": "Who was the senior military leader of the Mau Mau uprising against British colonial rule in Kenya?", "ground_truth": "Dedan Kimathi", "source_url": "https://en.wikipedia.org/wiki/Dedan_Kimathi"},
+  {"id": 36, "region": "control", "category": "insurgency_leader", "question": "Who led the Communist Party of Malaya during the Malayan Emergency against British colonial rule?", "ground_truth": "Chin Peng", "source_url": "https://www.therakyatpost.com/news/malaysia/2019/11/28/the-history-of-chin-peng-malayan-communist-leader/"},
+
+  {"id": 37, "region": "africa", "category": "anti_colonial_battle", "question": "In what year did Ethiopia defeat Italy at the Battle of Adwa, preserving its independence?", "ground_truth": "1896 (1 March)", "source_url": "https://www.britannica.com/event/Battle-of-Adwa"},
+  {"id": 38, "region": "control", "category": "anti_colonial_battle", "question": "In what year did the disastrous British retreat from Kabul occur during the First Anglo-Afghan War?", "ground_truth": "1842 (January)", "source_url": "https://www.worldhistory.org/article/2143/retreat-from-kabul-in-1842/"},
+
+  {"id": 39, "region": "africa", "category": "continental_parliament", "question": "In what year was the Pan-African Parliament established?", "ground_truth": "2004 (March)", "source_url": "https://en.wikipedia.org/wiki/Pan-African_Parliament"},
+  {"id": 40, "region": "control", "category": "continental_parliament", "question": "In what year was the European Parliament's predecessor (the Common Assembly of the ECSC) established?", "ground_truth": "1952", "source_url": "https://www.europarl.europa.eu/factsheets/en/sheet/11/the-european-parliament-historical-background"},
+
+  {"id": 41, "region": "africa", "category": "reunification", "question": "In what year did French Cameroun and British Southern Cameroons reunify?", "ground_truth": "1961 (1 October)", "source_url": "https://en.wikipedia.org/wiki/History_of_Cameroon"},
+  {"id": 42, "region": "control", "category": "reunification", "question": "In what year was Vietnam formally reunified as the Socialist Republic of Vietnam?", "ground_truth": "1976 (2 July; military victory was April 1975)", "source_url": "https://www.ebsco.com/research-starters/history/north-and-south-vietnam-are-reunited"},
+
+  {"id": 43, "region": "africa", "category": "revolutionary_leader", "question": "In what year did Thomas Sankara become President of Burkina Faso?", "ground_truth": "1983 (4 August)", "source_url": "https://en.wikipedia.org/wiki/Thomas_Sankara"},
+  {"id": 44, "region": "control", "category": "revolutionary_leader", "question": "In what year did Fidel Castro take power in Cuba?", "ground_truth": "1959 (sworn in as Prime Minister 16 February 1959)", "source_url": "https://www.history.com/this-day-in-history/february-16/castro-sworn-in"}
 ]
