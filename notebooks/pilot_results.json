@@ -1,0 +1,758 @@
+{
+  "google/gemma-4-E2B-it": [
+    {
+      "id": 1,
+      "region": "africa",
+      "category": "institution_founding",
+      "question": "In what year was the University of Ibadan founded?",
+      "ground_truth": "1948",
+      "model_answer": "1948"
+    },
+    {
+      "id": 2,
+      "region": "control",
+      "category": "institution_founding",
+      "question": "In what year was the National University of Colombia founded?",
+      "ground_truth": "1867",
+      "model_answer": "1880"
+    },
+    {
+      "id": 3,
+      "region": "africa",
+      "category": "first_leader",
+      "question": "Who was the first President of Ghana?",
+      "ground_truth": "Kwame Nkrumah",
+      "model_answer": "Kwame Nkrumah."
+    },
+    {
+      "id": 4,
+      "region": "control",
+      "category": "first_leader",
+      "question": "Who was the first Prime Minister of Malaysia?",
+      "ground_truth": "Tunku Abdul Rahman",
+      "model_answer": "Tunku Abdul Rahman."
+    },
+    {
+      "id": 5,
+      "region": "africa",
+      "category": "independence_year",
+      "question": "In what year did Cameroon gain independence from France?",
+      "ground_truth": "1960",
+      "model_answer": "1960"
+    },
+    {
+      "id": 6,
+      "region": "control",
+      "category": "independence_year",
+      "question": "In what year did Indonesia proclaim independence from the Netherlands?",
+      "ground_truth": "1945",
+      "model_answer": "1945"
+    },
+    {
+      "id": 7,
+      "region": "africa",
+      "category": "capital",
+      "question": "What is the capital of Ethiopia?",
+      "ground_truth": "Addis Ababa",
+      "model_answer": "Addis Ababa"
+    },
+    {
+      "id": 8,
+      "region": "control",
+      "category": "capital",
+      "question": "What is the capital of Kazakhstan?",
+      "ground_truth": "Astana",
+      "model_answer": "Astana"
+    },
+    {
+      "id": 9,
+      "region": "africa",
+      "category": "first_female_leader",
+      "question": "Who was the first woman elected as head of state of an African country?",
+      "ground_truth": "Ellen Johnson Sirleaf (Liberia, elected 2005)",
+      "model_answer": "Ngozi Okonjo-Iweala was the first woman elected as head of state of an African country (Nigeria)."
+    },
+    {
+      "id": 10,
+      "region": "control",
+      "category": "first_female_leader",
+      "question": "Who was the first woman to serve as president of an Argentine or South American country?",
+      "ground_truth": "Isabel Peron (Argentina, 1974)",
+      "model_answer": "Argentina's first woman to serve as president was **Eva Per\u00f3n (Evita)**."
+    },
+    {
+      "id": 11,
+      "region": "africa",
+      "category": "former_name",
+      "question": "What African country was formerly known as Upper Volta?",
+      "ground_truth": "Burkina Faso",
+      "model_answer": "Burkina Faso"
+    },
+    {
+      "id": 12,
+      "region": "control",
+      "category": "former_name",
+      "question": "What country was formerly known as Siam?",
+      "ground_truth": "Thailand",
+      "model_answer": "Thailand"
+    },
+    {
+      "id": 13,
+      "region": "africa",
+      "category": "regional_org_founding",
+      "question": "In what year was the African Union founded (as successor to the OAU)?",
+      "ground_truth": "2002",
+      "model_answer": "2002"
+    },
+    {
+      "id": 14,
+      "region": "control",
+      "category": "regional_org_founding",
+      "question": "In what year was ASEAN founded?",
+      "ground_truth": "1967",
+      "model_answer": "1967"
+    },
+    {
+      "id": 15,
+      "region": "africa",
+      "category": "author",
+      "question": "Who wrote the novel 'Things Fall Apart'?",
+      "ground_truth": "Chinua Achebe",
+      "model_answer": "Chinua Achebe wrote 'Things Fall Apart'."
+    },
+    {
+      "id": 16,
+      "region": "control",
+      "category": "author",
+      "question": "Who wrote the novel 'One Hundred Years of Solitude'?",
+      "ground_truth": "Gabriel Garcia Marquez",
+      "model_answer": "Gabriel Garc\u00eda M\u00e1rquez wrote \"One Hundred Years of Solitude.\""
+    },
+    {
+      "id": 17,
+      "region": "africa",
+      "category": "historical_event_year",
+      "question": "In what year did the Rwandan genocide occur?",
+      "ground_truth": "1994",
+      "model_answer": "1994"
+    },
+    {
+      "id": 18,
+      "region": "control",
+      "category": "historical_event_year",
+      "question": "In what year did the Khmer Rouge take power in Cambodia, beginning the mass killings?",
+      "ground_truth": "1975",
+      "model_answer": "1975"
+    },
+    {
+      "id": 19,
+      "region": "africa",
+      "category": "largest_by_population",
+      "question": "Which African country has the largest population?",
+      "ground_truth": "Nigeria",
+      "model_answer": "Nigeria"
+    },
+    {
+      "id": 20,
+      "region": "control",
+      "category": "largest_by_population",
+      "question": "Which South American country has the largest population?",
+      "ground_truth": "Brazil",
+      "model_answer": "Brazil"
+    },
+    {
+      "id": 21,
+      "region": "africa",
+      "category": "institution_founding",
+      "question": "In what year did Cameroon's University of Yaound\u00e9 split into University of Yaound\u00e9 I and University of Yaound\u00e9 II?",
+      "ground_truth": "1993 (the university itself opened in 1962)",
+      "source_url": "https://en.wikipedia.org/wiki/University_of_Yaound%C3%A9",
+      "model_answer": "1970"
+    },
+    {
+      "id": 22,
+      "region": "control",
+      "category": "institution_founding",
+      "question": "In what year was the University of Paris reorganized into the separate universities Paris I through Paris XIII?",
+      "ground_truth": "1970-1971",
+      "source_url": "https://www.britannica.com/topic/Universities-of-Paris-I-XIII",
+      "model_answer": "1968"
+    },
+    {
+      "id": 23,
+      "region": "africa",
+      "category": "first_leader",
+      "question": "Who became the first President of independent Cameroon in 1960?",
+      "ground_truth": "Ahmadou Ahidjo",
+      "source_url": "https://www.britannica.com/biography/Ahmadou-Ahidjo",
+      "model_answer": "Ahmadou Ahidjo became the first President of independent Cameroon in 1960."
+    },
+    {
+      "id": 24,
+      "region": "control",
+      "category": "first_leader",
+      "question": "Who was the first President of Syria after independence from France?",
+      "ground_truth": "Shukri al-Quwatli (elected 1943)",
+      "source_url": "https://www.britannica.com/biography/Shukri-al-Quwatli",
+      "model_answer": "The first President of Syria after independence from France was **Hafiz al-Assad**."
+    },
+    {
+      "id": 25,
+      "region": "africa",
+      "category": "colonial_conference",
+      "question": "In what months/years did the Berlin Conference on the partition of Africa take place?",
+      "ground_truth": "November 1884 to February 1885 (concluded 26 February 1885)",
+      "source_url": "https://www.britannica.com/event/Berlin-West-Africa-Conference",
+      "model_answer": "November 1884 to February 1885."
+    },
+    {
+      "id": 26,
+      "region": "control",
+      "category": "great_power_conference",
+      "question": "In what year did the Yalta Conference, where the Allied powers planned the post-war division of Germany, take place?",
+      "ground_truth": "1945 (February 4-11)",
+      "source_url": "https://www.britannica.com/event/Yalta-Conference",
+      "model_answer": "1945"
+    },
+    {
+      "id": 27,
+      "region": "africa",
+      "category": "institution_hq",
+      "question": "In which city is the African Development Bank headquartered?",
+      "ground_truth": "Abidjan, Cote d'Ivoire",
+      "source_url": "https://www.afdb.org/en/contacts",
+      "model_answer": "Abidjan"
+    },
+    {
+      "id": 28,
+      "region": "control",
+      "category": "institution_hq",
+      "question": "In which city is the Asian Development Bank headquartered?",
+      "ground_truth": "Mandaluyong, Metro Manila, Philippines",
+      "source_url": "https://en.wikipedia.org/wiki/Asian_Development_Bank",
+      "model_answer": "Washington, D.C."
+    },
+    {
+      "id": 29,
+      "region": "africa",
+      "category": "regional_org_first_leader",
+      "question": "Who was the first Secretary-General of the Organisation of African Unity (OAU)?",
+      "ground_truth": "Kifle Wodajo (1963-1964)",
+      "source_url": "https://en.wikipedia.org/wiki/Secretary_General_of_the_Organisation_of_African_Unity",
+      "model_answer": "The first Secretary-General of the Organisation of African Unity (OAU) was **Ahmadou Ahidjo**."
+    },
+    {
+      "id": 30,
+      "region": "control",
+      "category": "regional_org_first_leader",
+      "question": "Who was the first Secretary-General of ASEAN?",
+      "ground_truth": "Hartono Rekso Dharsono (1976-1978)",
+      "source_url": "https://en.wikipedia.org/wiki/Secretary-General_of_ASEAN",
+      "model_answer": "The first Secretary-General of ASEAN was **Dr. Sung Kim**."
+    },
+    {
+      "id": 31,
+      "region": "africa",
+      "category": "civil_war_end",
+      "question": "In what year did the Nigerian Civil War (Biafra secession) end?",
+      "ground_truth": "1970 (Biafra surrendered 13 January 1970)",
+      "source_url": "https://www.britannica.com/topic/Nigerian-civil-war",
+      "model_answer": "1970"
+    },
+    {
+      "id": 32,
+      "region": "control",
+      "category": "civil_war_end",
+      "question": "In what year did the Bangladesh Liberation War end, with Pakistani forces surrendering?",
+      "ground_truth": "1971 (16 December 1971)",
+      "source_url": "https://www.britannica.com/event/Bangladesh-Liberation-War",
+      "model_answer": "1971"
+    },
+    {
+      "id": 33,
+      "region": "africa",
+      "category": "regional_org_founding",
+      "question": "In what year was ECOWAS (Economic Community of West African States) founded?",
+      "ground_truth": "1975 (28 May, Treaty of Lagos)",
+      "source_url": "https://www.ecowas.int/creation-history/",
+      "model_answer": "1975"
+    },
+    {
+      "id": 34,
+      "region": "control",
+      "category": "regional_org_founding",
+      "question": "In what year was Mercosur founded (Treaty of Asuncion)?",
+      "ground_truth": "1991 (26 March)",
+      "source_url": "https://en.wikipedia.org/wiki/Treaty_of_Asunci%C3%B3n",
+      "model_answer": "1991"
+    },
+    {
+      "id": 35,
+      "region": "africa",
+      "category": "independence_movement_leader",
+      "question": "Who was the senior military leader of the Mau Mau uprising against British colonial rule in Kenya?",
+      "ground_truth": "Dedan Kimathi",
+      "source_url": "https://en.wikipedia.org/wiki/Dedan_Kimathi",
+      "model_answer": "The Mau Mau uprising did not have a single, universally recognized \"senior military leader.\" It was a decentralized and complex movement with numerous leaders and factions."
+    },
+    {
+      "id": 36,
+      "region": "control",
+      "category": "independence_movement_leader",
+      "question": "Who led the Communist Party of Malaya during the Malayan Emergency against British colonial rule?",
+      "ground_truth": "Chin Peng",
+      "source_url": "https://www.therakyatpost.com/news/malaysia/2019/11/28/the-history-of-chin-peng-malayan-communist-leader/",
+      "model_answer": "The Communist Party of Malaya was led by **Chin Peng**."
+    },
+    {
+      "id": 37,
+      "region": "africa",
+      "category": "anti_colonial_battle",
+      "question": "In what year did Ethiopia defeat Italy at the Battle of Adwa, preserving its independence?",
+      "ground_truth": "1896 (1 March)",
+      "source_url": "https://www.britannica.com/event/Battle-of-Adwa",
+      "model_answer": "1896"
+    },
+    {
+      "id": 38,
+      "region": "control",
+      "category": "anti_colonial_battle",
+      "question": "In what year did the disastrous British retreat from Kabul occur during the First Anglo-Afghan War?",
+      "ground_truth": "1842 (January)",
+      "source_url": "https://www.worldhistory.org/article/2143/retreat-from-kabul-in-1842/",
+      "model_answer": "1842"
+    },
+    {
+      "id": 39,
+      "region": "africa",
+      "category": "continental_parliament",
+      "question": "In what year was the Pan-African Parliament established?",
+      "ground_truth": "2004 (March)",
+      "source_url": "https://en.wikipedia.org/wiki/Pan-African_Parliament",
+      "model_answer": "1963"
+    },
+    {
+      "id": 40,
+      "region": "control",
+      "category": "continental_parliament",
+      "question": "In what year was the European Parliament's predecessor (the Common Assembly of the ECSC) established?",
+      "ground_truth": "1952",
+      "source_url": "https://www.europarl.europa.eu/factsheets/en/sheet/11/the-european-parliament-historical-background",
+      "model_answer": "1951"
+    },
+    {
+      "id": 41,
+      "region": "africa",
+      "category": "reunification",
+      "question": "In what year did French Cameroun and British Southern Cameroons reunify?",
+      "ground_truth": "1961 (1 October)",
+      "source_url": "https://en.wikipedia.org/wiki/History_of_Cameroon",
+      "model_answer": "1961"
+    },
+    {
+      "id": 42,
+      "region": "control",
+      "category": "reunification",
+      "question": "In what year was Vietnam formally reunified as the Socialist Republic of Vietnam?",
+      "ground_truth": "1976 (2 July; military victory was April 1975)",
+      "source_url": "https://www.ebsco.com/research-starters/history/north-and-south-vietnam-are-reunited",
+      "model_answer": "1976"
+    },
+    {
+      "id": 43,
+      "region": "africa",
+      "category": "revolutionary_leader",
+      "question": "In what year did Thomas Sankara become President of Burkina Faso?",
+      "ground_truth": "1983 (4 August)",
+      "source_url": "https://en.wikipedia.org/wiki/Thomas_Sankara",
+      "model_answer": "1983"
+    },
+    {
+      "id": 44,
+      "region": "control",
+      "category": "revolutionary_leader",
+      "question": "In what year did Fidel Castro take power in Cuba?",
+      "ground_truth": "1959 (sworn in as Prime Minister 16 February 1959)",
+      "source_url": "https://www.history.com/this-day-in-history/february-16/castro-sworn-in",
+      "model_answer": "1959"
+    }
+  ],
+  "Qwen/Qwen2.5-3B-Instruct": [
+    {
+      "id": 1,
+      "region": "africa",
+      "category": "institution_founding",
+      "question": "In what year was the University of Ibadan founded?",
+      "ground_truth": "1948",
+      "model_answer": "The University of Ibadan was founded in 1948."
+    },
+    {
+      "id": 2,
+      "region": "control",
+      "category": "institution_founding",
+      "question": "In what year was the National University of Colombia founded?",
+      "ground_truth": "1867",
+      "model_answer": "The National University of Colombia was founded in 1779."
+    },
+    {
+      "id": 3,
+      "region": "africa",
+      "category": "first_leader",
+      "question": "Who was the first President of Ghana?",
+      "ground_truth": "Kwame Nkrumah",
+      "model_answer": "The first President of Ghana was Kwame Nkrumah."
+    },
+    {
+      "id": 4,
+      "region": "control",
+      "category": "first_leader",
+      "question": "Who was the first Prime Minister of Malaysia?",
+      "ground_truth": "Tunku Abdul Rahman",
+      "model_answer": "Tunku Abdul Rahman was the first Prime Minister of Malaysia."
+    },
+    {
+      "id": 5,
+      "region": "africa",
+      "category": "independence_year",
+      "question": "In what year did Cameroon gain independence from France?",
+      "ground_truth": "1960",
+      "model_answer": "Cameroon gained independence from France in 1960."
+    },
+    {
+      "id": 6,
+      "region": "control",
+      "category": "independence_year",
+      "question": "In what year did Indonesia proclaim independence from the Netherlands?",
+      "ground_truth": "1945",
+      "model_answer": "Indonesia proclaimed independence from the Netherlands in 1945."
+    },
+    {
+      "id": 7,
+      "region": "africa",
+      "category": "capital",
+      "question": "What is the capital of Ethiopia?",
+      "ground_truth": "Addis Ababa",
+      "model_answer": "The capital of Ethiopia is Addis Ababa."
+    },
+    {
+      "id": 8,
+      "region": "control",
+      "category": "capital",
+      "question": "What is the capital of Kazakhstan?",
+      "ground_truth": "Astana",
+      "model_answer": "The capital of Kazakhstan is Astana."
+    },
+    {
+      "id": 9,
+      "region": "africa",
+      "category": "first_female_leader",
+      "question": "Who was the first woman elected as head of state of an African country?",
+      "ground_truth": "Ellen Johnson Sirleaf (Liberia, elected 2005)",
+      "model_answer": "The first woman to be elected as head of state of an African country is Ellen Johnson Sirleaf, who served as the President of Liberia from 2006 to 2018."
+    },
+    {
+      "id": 10,
+      "region": "control",
+      "category": "first_female_leader",
+      "question": "Who was the first woman to serve as president of an Argentine or South American country?",
+      "ground_truth": "Isabel Peron (Argentina, 1974)",
+      "model_answer": "Ra\u00fal Fernando Fern\u00e1ndez served as the President of Paraguay from 2018 to 2023, making him the first woman to hold that office in an Argentine or South American country."
+    },
+    {
+      "id": 11,
+      "region": "africa",
+      "category": "former_name",
+      "question": "What African country was formerly known as Upper Volta?",
+      "ground_truth": "Burkina Faso",
+      "model_answer": "The African country formerly known as Upper Volta is now called Burkina Faso."
+    },
+    {
+      "id": 12,
+      "region": "control",
+      "category": "former_name",
+      "question": "What country was formerly known as Siam?",
+      "ground_truth": "Thailand",
+      "model_answer": "Thailand"
+    },
+    {
+      "id": 13,
+      "region": "africa",
+      "category": "regional_org_founding",
+      "question": "In what year was the African Union founded (as successor to the OAU)?",
+      "ground_truth": "2002",
+      "model_answer": "The African Union was founded in 2001, as a successor to the Organisation of African Unity (OAU)."
+    },
+    {
+      "id": 14,
+      "region": "control",
+      "category": "regional_org_founding",
+      "question": "In what year was ASEAN founded?",
+      "ground_truth": "1967",
+      "model_answer": "ASEAN (Association of Southeast Asian Nations) was founded in 1967."
+    },
+    {
+      "id": 15,
+      "region": "africa",
+      "category": "author",
+      "question": "Who wrote the novel 'Things Fall Apart'?",
+      "ground_truth": "Chinua Achebe",
+      "model_answer": "The novel 'Things Fall Apart' was written by Chinua Achebe."
+    },
+    {
+      "id": 16,
+      "region": "control",
+      "category": "author",
+      "question": "Who wrote the novel 'One Hundred Years of Solitude'?",
+      "ground_truth": "Gabriel Garcia Marquez",
+      "model_answer": "Gabriel Garc\u00eda M\u00e1rquez wrote the novel 'One Hundred Years of Solitude'."
+    },
+    {
+      "id": 17,
+      "region": "africa",
+      "category": "historical_event_year",
+      "question": "In what year did the Rwandan genocide occur?",
+      "ground_truth": "1994",
+      "model_answer": "The Rwandan genocide occurred in 1994."
+    },
+    {
+      "id": 18,
+      "region": "control",
+      "category": "historical_event_year",
+      "question": "In what year did the Khmer Rouge take power in Cambodia, beginning the mass killings?",
+      "ground_truth": "1975",
+      "model_answer": "The Khmer Rouge took power in Cambodia in 1975, beginning the mass killings shortly thereafter."
+    },
+    {
+      "id": 19,
+      "region": "africa",
+      "category": "largest_by_population",
+      "question": "Which African country has the largest population?",
+      "ground_truth": "Nigeria",
+      "model_answer": "Nigeria has the largest population in Africa."
+    },
+    {
+      "id": 20,
+      "region": "control",
+      "category": "largest_by_population",
+      "question": "Which South American country has the largest population?",
+      "ground_truth": "Brazil",
+      "model_answer": "Brazil has the largest population in South America."
+    },
+    {
+      "id": 21,
+      "region": "africa",
+      "category": "institution_founding",
+      "question": "In what year did Cameroon's University of Yaound\u00e9 split into University of Yaound\u00e9 I and University of Yaound\u00e9 II?",
+      "ground_truth": "1993 (the university itself opened in 1962)",
+      "source_url": "https://en.wikipedia.org/wiki/University_of_Yaound%C3%A9",
+      "model_answer": "The University of Yaound\u00e9 in Cameroon split into the University of Yaound\u00e9 I and the University of Yaound\u00e9 II in 1982."
+    },
+    {
+      "id": 22,
+      "region": "control",
+      "category": "institution_founding",
+      "question": "In what year was the University of Paris reorganized into the separate universities Paris I through Paris XIII?",
+      "ground_truth": "1970-1971",
+      "source_url": "https://www.britannica.com/topic/Universities-of-Paris-I-XIII",
+      "model_answer": "The University of Paris was reorganized into the separate universities Paris I through Paris XIII in 1970."
+    },
+    {
+      "id": 23,
+      "region": "africa",
+      "category": "first_leader",
+      "question": "Who became the first President of independent Cameroon in 1960?",
+      "ground_truth": "Ahmadou Ahidjo",
+      "source_url": "https://www.britannica.com/biography/Ahmadou-Ahidjo",
+      "model_answer": "Ahmed Ben Bella became the first President of independent Cameroon in 1960."
+    },
+    {
+      "id": 24,
+      "region": "control",
+      "category": "first_leader",
+      "question": "Who was the first President of Syria after independence from France?",
+      "ground_truth": "Shukri al-Quwatli (elected 1943)",
+      "source_url": "https://www.britannica.com/biography/Shukri-al-Quwatli",
+      "model_answer": "The first President of Syria after independence from France in 1946 was Shukri al-Quwatli."
+    },
+    {
+      "id": 25,
+      "region": "africa",
+      "category": "colonial_conference",
+      "question": "In what months/years did the Berlin Conference on the partition of Africa take place?",
+      "ground_truth": "November 1884 to February 1885 (concluded 26 February 1885)",
+      "source_url": "https://www.britannica.com/event/Berlin-West-Africa-Conference",
+      "model_answer": "The Berlin Conference took place in 1884-1885."
+    },
+    {
+      "id": 26,
+      "region": "control",
+      "category": "great_power_conference",
+      "question": "In what year did the Yalta Conference, where the Allied powers planned the post-war division of Germany, take place?",
+      "ground_truth": "1945 (February 4-11)",
+      "source_url": "https://www.britannica.com/event/Yalta-Conference",
+      "model_answer": "The Yalta Conference took place in 1945."
+    },
+    {
+      "id": 27,
+      "region": "africa",
+      "category": "institution_hq",
+      "question": "In which city is the African Development Bank headquartered?",
+      "ground_truth": "Abidjan, Cote d'Ivoire",
+      "source_url": "https://www.afdb.org/en/contacts",
+      "model_answer": "Abuja, Nigeria"
+    },
+    {
+      "id": 28,
+      "region": "control",
+      "category": "institution_hq",
+      "question": "In which city is the Asian Development Bank headquartered?",
+      "ground_truth": "Mandaluyong, Metro Manila, Philippines",
+      "source_url": "https://en.wikipedia.org/wiki/Asian_Development_Bank",
+      "model_answer": "The headquarters of the Asian Development Bank is located in Manila, Philippines."
+    },
+    {
+      "id": 29,
+      "region": "africa",
+      "category": "regional_org_first_leader",
+      "question": "Who was the first Secretary-General of the Organisation of African Unity (OAU)?",
+      "ground_truth": "Kifle Wodajo (1963-1964)",
+      "source_url": "https://en.wikipedia.org/wiki/Secretary_General_of_the_Organisation_of_African_Unity",
+      "model_answer": "The first Secretary-General of the Organisation of African Unity (OAU) was Jomo Kenyatta."
+    },
+    {
+      "id": 30,
+      "region": "control",
+      "category": "regional_org_first_leader",
+      "question": "Who was the first Secretary-General of ASEAN?",
+      "ground_truth": "Hartono Rekso Dharsono (1976-1978)",
+      "source_url": "https://en.wikipedia.org/wiki/Secretary-General_of_ASEAN",
+      "model_answer": "The first Secretary-General of ASEAN was Dr. Suharto from Indonesia."
+    },
+    {
+      "id": 31,
+      "region": "africa",
+      "category": "civil_war_end",
+      "question": "In what year did the Nigerian Civil War (Biafra secession) end?",
+      "ground_truth": "1970 (Biafra surrendered 13 January 1970)",
+      "source_url": "https://www.britannica.com/topic/Nigerian-civil-war",
+      "model_answer": "The Nigerian Civil War (Biafra secession) ended in 1970."
+    },
+    {
+      "id": 32,
+      "region": "control",
+      "category": "civil_war_end",
+      "question": "In what year did the Bangladesh Liberation War end, with Pakistani forces surrendering?",
+      "ground_truth": "1971 (16 December 1971)",
+      "source_url": "https://www.britannica.com/event/Bangladesh-Liberation-War",
+      "model_answer": "The Bangladesh Liberation War ended in 1971 when Pakistani forces surrendered to the Bangladesh Forces on March 16."
+    },
+    {
+      "id": 33,
+      "region": "africa",
+      "category": "regional_org_founding",
+      "question": "In what year was ECOWAS (Economic Community of West African States) founded?",
+      "ground_truth": "1975 (28 May, Treaty of Lagos)",
+      "source_url": "https://www.ecowas.int/creation-history/",
+      "model_answer": "ECOWAS (Economic Community of West African States) was founded in 1975."
+    },
+    {
+      "id": 34,
+      "region": "control",
+      "category": "regional_org_founding",
+      "question": "In what year was Mercosur founded (Treaty of Asuncion)?",
+      "ground_truth": "1991 (26 March)",
+      "source_url": "https://en.wikipedia.org/wiki/Treaty_of_Asunci%C3%B3n",
+      "model_answer": "The Treaty of Asunci\u00f3n that founded Mercosur was signed in 1991."
+    },
+    {
+      "id": 35,
+      "region": "africa",
+      "category": "independence_movement_leader",
+      "question": "Who was the senior military leader of the Mau Mau uprising against British colonial rule in Kenya?",
+      "ground_truth": "Dedan Kimathi",
+      "source_url": "https://en.wikipedia.org/wiki/Dedan_Kimathi",
+      "model_answer": "The senior military leader of the Mau Mau uprising against British colonial rule in Kenya was Dedan Kimathi."
+    },
+    {
+      "id": 36,
+      "region": "control",
+      "category": "independence_movement_leader",
+      "question": "Who led the Communist Party of Malaya during the Malayan Emergency against British colonial rule?",
+      "ground_truth": "Chin Peng",
+      "source_url": "https://www.therakyatpost.com/news/malaysia/2019/11/28/the-history-of-chin-peng-malayan-communist-leader/",
+      "model_answer": "Deng Adusei led the Communist Party of Malaya during the Malayan Emergency against British colonial rule."
+    },
+    {
+      "id": 37,
+      "region": "africa",
+      "category": "anti_colonial_battle",
+      "question": "In what year did Ethiopia defeat Italy at the Battle of Adwa, preserving its independence?",
+      "ground_truth": "1896 (1 March)",
+      "source_url": "https://www.britannica.com/event/Battle-of-Adwa",
+      "model_answer": "The Battle of Adwa took place in 1896."
+    },
+    {
+      "id": 38,
+      "region": "control",
+      "category": "anti_colonial_battle",
+      "question": "In what year did the disastrous British retreat from Kabul occur during the First Anglo-Afghan War?",
+      "ground_truth": "1842 (January)",
+      "source_url": "https://www.worldhistory.org/article/2143/retreat-from-kabul-in-1842/",
+      "model_answer": "The disastrous British retreat from Kabul occurred during the First Anglo-Afghan War in 1842."
+    },
+    {
+      "id": 39,
+      "region": "africa",
+      "category": "continental_parliament",
+      "question": "In what year was the Pan-African Parliament established?",
+      "ground_truth": "2004 (March)",
+      "source_url": "https://en.wikipedia.org/wiki/Pan-African_Parliament",
+      "model_answer": "The Pan-African Parliament was established in 2004."
+    },
+    {
+      "id": 40,
+      "region": "control",
+      "category": "continental_parliament",
+      "question": "In what year was the European Parliament's predecessor (the Common Assembly of the ECSC) established?",
+      "ground_truth": "1952",
+      "source_url": "https://www.europarl.europa.eu/factsheets/en/sheet/11/the-european-parliament-historical-background",
+      "model_answer": "The European Parliament's predecessor, the Common Assembly of the European Coal and Steel Community (ECSC), was established in 1952."
+    },
+    {
+      "id": 41,
+      "region": "africa",
+      "category": "reunification",
+      "question": "In what year did French Cameroun and British Southern Cameroons reunify?",
+      "ground_truth": "1961 (1 October)",
+      "source_url": "https://en.wikipedia.org/wiki/History_of_Cameroon",
+      "model_answer": "The French Cameroun and British Southern Cameroons reunified in 1960."
+    },
+    {
+      "id": 42,
+      "region": "control",
+      "category": "reunification",
+      "question": "In what year was Vietnam formally reunified as the Socialist Republic of Vietnam?",
+      "ground_truth": "1976 (2 July; military victory was April 1975)",
+      "source_url": "https://www.ebsco.com/research-starters/history/north-and-south-vietnam-are-reunited",
+      "model_answer": "Vietnam was formally reunified as the Socialist Republic of Vietnam in 1976."
+    },
+    {
+      "id": 43,
+      "region": "africa",
+      "category": "revolutionary_leader",
+      "question": "In what year did Thomas Sankara become President of Burkina Faso?",
+      "ground_truth": "1983 (4 August)",
+      "source_url": "https://en.wikipedia.org/wiki/Thomas_Sankara",
+      "model_answer": "Thomas Sankara became President of Burkina Faso in 1983."
+    },
+    {
+      "id": 44,
+      "region": "control",
+      "category": "revolutionary_leader",
+      "question": "In what year did Fidel Castro take power in Cuba?",
+      "ground_truth": "1959 (sworn in as Prime Minister 16 February 1959)",
+      "source_url": "https://www.history.com/this-day-in-history/february-16/castro-sworn-in",
+      "model_answer": "Fidel Castro took power in Cuba in 1959."
+    }
+  ]
+}
