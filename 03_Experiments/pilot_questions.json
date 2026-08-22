@@ -1,33 +1,33 @@
 [
-  {"id": 1, "region": "africa", "category": "institution_founding", "question": "In what year was the University of Ibadan founded?", "ground_truth": "1948"},
-  {"id": 2, "region": "control", "category": "institution_founding", "question": "In what year was the National University of Colombia founded?", "ground_truth": "1867"},
+  {"id": 1, "region": "africa", "category": "institution_founding", "question": "In what year was the University of Ibadan founded?", "ground_truth": "1948", "source_url": "https://www.britannica.com/place/University-of-Ibadan"},
+  {"id": 2, "region": "control", "category": "institution_founding", "question": "In what year was the National University of Colombia founded?", "ground_truth": "1867", "source_url": "https://en.wikipedia.org/wiki/National_University_of_Colombia"},
 
-  {"id": 3, "region": "africa", "category": "first_leader", "question": "Who was the first President of Ghana?", "ground_truth": "Kwame Nkrumah"},
-  {"id": 4, "region": "control", "category": "first_leader", "question": "Who was the first Prime Minister of Malaysia?", "ground_truth": "Tunku Abdul Rahman"},
+  {"id": 3, "region": "africa", "category": "first_leader", "question": "Who was the first President of Ghana?", "ground_truth": "Kwame Nkrumah", "source_url": "https://www.britannica.com/biography/Kwame-Nkrumah"},
+  {"id": 4, "region": "control", "category": "first_leader", "question": "Who was the first Prime Minister of Malaysia?", "ground_truth": "Tunku Abdul Rahman", "source_url": "https://www.britannica.com/biography/Tunku-Abdul-Rahman-Putra-Alhaj"},
 
-  {"id": 5, "region": "africa", "category": "independence_year", "question": "In what year did Cameroon gain independence from France?", "ground_truth": "1960"},
-  {"id": 6, "region": "control", "category": "independence_year", "question": "In what year did Indonesia proclaim independence from the Netherlands?", "ground_truth": "1945"},
+  {"id": 5, "region": "africa", "category": "independence_year", "question": "In what year did Cameroon gain independence from France?", "ground_truth": "1960", "source_url": "https://www.britannica.com/place/Cameroon/Moving-toward-independence"},
+  {"id": 6, "region": "control", "category": "independence_year", "question": "In what year did Indonesia proclaim independence from the Netherlands?", "ground_truth": "1945", "source_url": "https://en.wikipedia.org/wiki/Proclamation_of_Indonesian_Independence"},
 
-  {"id": 7, "region": "africa", "category": "capital", "question": "What is the capital of Ethiopia?", "ground_truth": "Addis Ababa"},
-  {"id": 8, "region": "control", "category": "capital", "question": "What is the capital of Kazakhstan?", "ground_truth": "Astana"},
+  {"id": 7, "region": "africa", "category": "capital", "question": "What is the capital of Ethiopia?", "ground_truth": "Addis Ababa", "source_url": "https://www.britannica.com/place/Addis-Ababa"},
+  {"id": 8, "region": "control", "category": "capital", "question": "What is the capital of Kazakhstan?", "ground_truth": "Astana", "source_url": "https://www.britannica.com/place/Astana-Kazakhstan"},
 
-  {"id": 9, "region": "africa", "category": "first_female_leader", "question": "Who was the first woman elected as head of state of an African country?", "ground_truth": "Ellen Johnson Sirleaf (Liberia, elected 2005)"},
-  {"id": 10, "region": "control", "category": "first_female_leader", "question": "Who was the first woman to serve as president of an Argentine or South American country?", "ground_truth": "Isabel Peron (Argentina, 1974)"},
+  {"id": 9, "region": "africa", "category": "first_female_leader", "question": "Who was the first woman elected as head of state of an African country?", "ground_truth": "Ellen Johnson Sirleaf (Liberia, elected 2005)", "source_url": "https://www.britannica.com/biography/Ellen-Johnson-Sirleaf"},
+  {"id": 10, "region": "control", "category": "first_female_leader", "question": "Who was the first woman to serve as president of an Argentine or South American country?", "ground_truth": "Isabel Peron (Argentina, 1974)", "source_url": "https://www.britannica.com/biography/Isabel-Peron"},
 
-  {"id": 11, "region": "africa", "category": "former_name", "question": "What African country was formerly known as Upper Volta?", "ground_truth": "Burkina Faso"},
-  {"id": 12, "region": "control", "category": "former_name", "question": "What country was formerly known as Siam?", "ground_truth": "Thailand"},
+  {"id": 11, "region": "africa", "category": "former_name", "question": "What African country was formerly known as Upper Volta?", "ground_truth": "Burkina Faso", "source_url": "https://www.worldatlas.com/articles/which-country-was-known-as-upper-volta.html"},
+  {"id": 12, "region": "control", "category": "former_name", "question": "What country was formerly known as Siam?", "ground_truth": "Thailand", "source_url": "https://www.ebsco.com/research-starters/history/siam-changes-its-name-thailand"},
 
-  {"id": 13, "region": "africa", "category": "regional_org_founding", "question": "In what year was the African Union founded (as successor to the OAU)?", "ground_truth": "2002"},
-  {"id": 14, "region": "control", "category": "regional_org_founding", "question": "In what year was ASEAN founded?", "ground_truth": "1967"},
+  {"id": 13, "region": "africa", "category": "regional_org_founding", "question": "In what year was the African Union founded (as successor to the OAU)?", "ground_truth": "2002", "source_url": "https://au.int/en/overview"},
+  {"id": 14, "region": "control", "category": "regional_org_founding", "question": "In what year was ASEAN founded?", "ground_truth": "1967", "source_url": "https://en.wikipedia.org/wiki/ASEAN_Declaration"},
 
-  {"id": 15, "region": "africa", "category": "author", "question": "Who wrote the novel 'Things Fall Apart'?", "ground_truth": "Chinua Achebe"},
-  {"id": 16, "region": "control", "category": "author", "question": "Who wrote the novel 'One Hundred Years of Solitude'?", "ground_truth": "Gabriel Garcia Marquez"},
+  {"id": 15, "region": "africa", "category": "author", "question": "Who wrote the novel 'Things Fall Apart'?", "ground_truth": "Chinua Achebe", "source_url": "https://en.wikipedia.org/wiki/Things_Fall_Apart"},
+  {"id": 16, "region": "control", "category": "author", "question": "Who wrote the novel 'One Hundred Years of Solitude'?", "ground_truth": "Gabriel Garcia Marquez", "source_url": "https://en.wikipedia.org/wiki/One_Hundred_Years_of_Solitude"},
 
-  {"id": 17, "region": "africa", "category": "historical_event_year", "question": "In what year did the Rwandan genocide occur?", "ground_truth": "1994"},
-  {"id": 18, "region": "control", "category": "historical_event_year", "question": "In what year did the Khmer Rouge take power in Cambodia, beginning the mass killings?", "ground_truth": "1975"},
+  {"id": 17, "region": "africa", "category": "historical_event_year", "question": "In what year did the Rwandan genocide occur?", "ground_truth": "1994", "source_url": "https://www.britannica.com/event/Rwanda-genocide-of-1994"},
+  {"id": 18, "region": "control", "category": "historical_event_year", "question": "In what year did the Khmer Rouge take power in Cambodia, beginning the mass killings?", "ground_truth": "1975", "source_url": "https://www.britannica.com/topic/Khmer-Rouge"},
 
-  {"id": 19, "region": "africa", "category": "largest_by_population", "question": "Which African country has the largest population?", "ground_truth": "Nigeria"},
-  {"id": 20, "region": "control", "category": "largest_by_population", "question": "Which South American country has the largest population?", "ground_truth": "Brazil"},
+  {"id": 19, "region": "africa", "category": "largest_by_population", "question": "Which African country has the largest population?", "ground_truth": "Nigeria", "source_url": "https://www.britannica.com/question/What-is-the-largest-African-country-by-population"},
+  {"id": 20, "region": "control", "category": "largest_by_population", "question": "Which South American country has the largest population?", "ground_truth": "Brazil", "source_url": "https://www.britannica.com/place/Brazil"},
 
   {"id": 21, "region": "africa", "category": "institution_founding", "question": "In what year did Cameroon's University of Yaoundé split into University of Yaoundé I and University of Yaoundé II?", "ground_truth": "1993 (the university itself opened in 1962)", "source_url": "https://en.wikipedia.org/wiki/University_of_Yaound%C3%A9"},
   {"id": 22, "region": "control", "category": "institution_founding", "question": "In what year was the University of Paris reorganized into the separate universities Paris I through Paris XIII?", "ground_truth": "1970-1971", "source_url": "https://www.britannica.com/topic/Universities-of-Paris-I-XIII"},
