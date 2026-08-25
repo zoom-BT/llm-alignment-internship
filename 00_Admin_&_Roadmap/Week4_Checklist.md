@@ -5,52 +5,54 @@
 ## 🎯 Objective (contract, Annex A — verbatim)
 > "The objective of Week 4 is to transform a broad theme concerning artificial intelligence alignment in an African context into a precise research question that can reasonably be investigated during the remaining four weeks."
 
-## 💡 Potential themes (contract, Annex A — verbatim list, "may include") — not yet narrowed down, needs a dedicated discussion
+## 💡 Potential themes (contract, Annex A — verbatim list, "may include")
 - [ ] differences in safety behavior between English, French, and African languages;
-- [ ] the effect of translation on model safety refusals;
+- [x] the effect of translation on model safety refusals; — **selected**, this is H1 of the final proposal (native vs. machine-translated DPO safety data)
 - [ ] the effect of code-switching on model safety behavior;
 - [ ] differences in model behavior when using African varieties of French or English;
 - [ ] biases associated with African names, locations, professions, institutions, or social situations;
-- [ ] hallucinations concerning African institutions, public figures, historical events, or local knowledge;
+- [x] ~~hallucinations concerning African institutions, public figures, historical events, or local knowledge~~ — piloted first (44-question African vs. matched-control set, two models), result was statistically inconclusive in both directions (Fisher p=0.72–0.74); documented in `03_Experiments/Week4_Pilot_Results.md`, not carried forward as the main topic
 - [ ] model calibration and honesty on underrepresented African topics;
 - [ ] conflicts between general alignment norms and preferences expressed by local evaluators;
-- [ ] limitations of automatically translated safety benchmarks;
+- [x] limitations of automatically translated safety benchmarks; — also folded into the selected topic (Related Work axis 1)
 - [ ] disagreement between automatic evaluators and human evaluators familiar with the studied context;
 - [ ] trade-offs between safety refusals and usefulness in low-resource languages.
 
-**Not selected yet** — this needs its own focused conversation (motivations, what's genuinely feasible with a 0.5-1B-class model and no dedicated human-annotation budget), not a unilateral pick. First Monday task.
+**Selected:** *Translated Safety Alignment vs. Native — DPO on African Multi-Lingual Foundation Models* (deliberately Harmless-only, not combined with Honest — see `04_Weekly_Reports/Week_04_Research_Proposal.md`).
 
 ## ✅ Research-Topic Selection Criteria (contract, Annex A — verbatim) — "The selected topic shall:"
-- [ ] formulate a precise research question;
-- [ ] contain at least one testable hypothesis;
-- [ ] clearly identify the models to be studied;
-- [ ] use legally accessible data;
-- [ ] include an evaluation metric or procedure;
-- [ ] include at least one baseline;
-- [ ] be feasible with the available computing resources;
-- [ ] allow a complete initial experiment to run in less than twelve hours;
-- [ ] avoid complex human-data collection where possible;
-- [ ] contain an identifiable contribution, even where the contribution is limited in scope.
+- [x] formulate a precise research question; — section 3
+- [x] contain at least one testable hypothesis; — H1/H2/H3, section 4
+- [x] clearly identify the models to be studied; — M1 AfriqueQwen3.5-4B-50Langs, M2 Qwen3.5-4B-Base, section 6
+- [x] use legally accessible data; — UbuntuGuard/AfriHate/HealthBench-Africa/Uhura-TruthfulQA/IrokoBench, all CC BY 4.0 or open on HF, verified by URL before inclusion
+- [x] include an evaluation metric or procedure; — RR%, Over-RR%, F1-AfriHate, section 9
+- [x] include at least one baseline; — B1-B4, section 8
+- [x] be feasible with the available computing resources; — QLoRA on Kaggle 2×T4, section 12
+- [x] allow a complete initial experiment to run in less than twelve hours; — estimated <2h end-to-end, section 12
+- [x] avoid complex human-data collection where possible; — pre-annotated benchmarks + 10% manual cross-check by the intern, no external annotators
+- [x] contain an identifiable contribution, even where the contribution is limited in scope. — C1-C3, section 5
 
 ## 📥 Deliverables (contract, Annex A — verbatim) — "By the end of Week 4, the Intern shall submit a two- to three-page research proposal containing:"
-- [ ] a provisional title;
-- [ ] the research context;
-- [ ] the research question;
-- [ ] the hypothesis;
-- [ ] the expected contribution;
-- [ ] related work;
-- [ ] the selected models;
-- [ ] the datasets;
-- [ ] the evaluation metrics;
-- [ ] the baselines;
-- [ ] the experimental protocol;
-- [ ] the planned ablation studies;
-- [ ] the estimated computing requirements;
-- [ ] the main risks and limitations;
-- [ ] the schedule for Weeks 5 to 8;
-- [ ] the figures and tables expected to appear in the manuscript.
+- [x] a provisional title;
+- [x] the research context;
+- [x] the research question;
+- [x] the hypothesis;
+- [x] the expected contribution;
+- [x] related work;
+- [x] the selected models;
+- [x] the datasets;
+- [x] the evaluation metrics;
+- [x] the baselines;
+- [x] the experimental protocol;
+- [x] the planned ablation studies;
+- [x] the estimated computing requirements;
+- [x] the main risks and limitations;
+- [x] the schedule for Weeks 5 to 8;
+- [x] the figures and tables expected to appear in the manuscript.
 
-**Approval gate (verbatim):** "The final research topic shall be approved by the Supervisor before the main experiments begin." — flag this explicitly at this week's supervision meeting, don't just proceed unilaterally.
+All 15 sections present in `04_Weekly_Reports/Week_04_Research_Proposal.md` (English submission version; French working draft kept alongside as `Balbino Research Proposal .md`).
+
+**Approval gate (verbatim):** "The final research topic shall be approved by the Supervisor before the main experiments begin." — **[ ] still open as of 2026-08-24.** Proposal is written and submitted for review, but no confirmation of Supervisor sign-off has been recorded here yet. Do not treat Week 5's main experiments (the actual DPO training runs) as cleared to start until this is explicitly confirmed — repo/pipeline setup work is fine in the meantime, training runs are not.
 
 ## 🔒 What Week 3 already tells us, going into topic selection
 - **LoRA is the practical default** for any experiment in this project: better result than full fine-tuning (13.795 vs. 14.61 perplexity) *and* the smaller footprint — no reason to default to full fine-tuning for the actual research topic's experiments.
