@@ -26,26 +26,12 @@ The approved proposal (`04_Weekly_Reports/Week_04_Research_Proposal.md`, approve
 
 **Planned:** proposal cites UbuntuGuard as CC BY 4.0.
 
-**Actual:** the GitHub repo has no LICENSE file (checked directly). The paper itself states "License: CC BY 4.0" — so the proposal's original citation was likely correct, just not verifiable from the repo alone. Confirming directly with the authors (email below) rather than relying on the paper statement alone for a deliverable that may eventually be shared with the Supervisor or beyond.
+**Actual:** the GitHub repo has no LICENSE file (checked directly). The paper itself states "License: CC BY 4.0" — so the proposal's original citation was likely correct, just not verifiable from the repo alone. Confirming directly with the authors (email, drafted in conversation, not stored here) rather than relying on the paper statement alone for a deliverable that may eventually be shared with the Supervisor or beyond.
 
----
+## D4. UbuntuGuard's local-language content is itself machine-translated
 
-## Email to the UbuntuGuard authors (draft — not sent)
+**Planned:** Native-DPO would use content that is natively/expertly grounded in the target language, contrasted against a machine-translated (NLLB) counterfactual for H1.
 
-To: Tassallah Abdullahi <tassallahabdullahi@brown.edu> (corresponding author, per arXiv:2601.12696v3)
+**Actual:** per the paper's own methodology, the 155 domain experts authored the *original English* queries only — the translation into the 10 African languages was done with **Google Translate**, quality-filtered via automated GEMBA-MQM scoring plus validation from just 4 native speakers (Tumbuka dropped for failing the 70% quality threshold). UbuntuGuard's `crosslingual`/`translated` content is machine-translated content, not native/expert-authored content.
 
-> Subject: UbuntuGuard — question about the training split and license
->
-> Dear Dr. Abdullahi,
->
-> I'm a research intern using UbuntuGuard for a project on DPO safety alignment for African-language foundation models, and I have two quick questions after working with the released repository (github.com/hemhemoh/UbuntuGuard).
->
-> 1. The paper's Table 3 reports train/test split sizes per language, but the repository currently only contains the test-split files (`Ubuntu_guard_test_*.jsonl`). Is the training split planned for public release, and if so, is there a timeline? If it isn't being released, I'd appreciate confirmation so I can plan around a self-constructed split of the test data instead.
-> 2. The paper states the dataset is released under CC BY 4.0, but the repository doesn't currently include a LICENSE file. Could you confirm this is still the intended license, or point me to where it's formally declared?
->
-> Thank you for making this benchmark available — it's been very useful.
->
-> Best regards,
-> Balbino Tchoutzine
-
-**Notes on the draft:** kept short and specific (two concrete questions, not a general request); addressed to the corresponding author listed on the paper rather than the GitHub commit author, since that's the more standard channel for this kind of question. Not sent — for review/editing before you send it yourself.
+**Consequence:** compounds D2 — using UbuntuGuard's local-language files as "Native-DPO" would mean comparing one machine translation (Google Translate, quality-filtered) against another (our own NLLB), not "native vs. translated" as H1 intends. Reinforces option (a) from D2's resolution: keep UbuntuGuard's local-language files for supplementary RR% evaluation only, and build the actual H1 comparison from English-source content translated two ways (expert vs. machine) ourselves, if a genuinely native-quality source can't be found.
