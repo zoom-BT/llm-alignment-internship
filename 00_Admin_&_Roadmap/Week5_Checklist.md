@@ -26,12 +26,31 @@
 - [ ] an initial version of the main results table;
 - [ ] a list of the principal failure modes.
 
-## 📅 Day-by-day catch-up plan
+## 📅 Schedule: theoretical start vs. actual catch-up
 
-- **Wed 26 Aug (done):** Repository split (`afrique-safety-dpo_alignment`, private, independent), reusable QLoRA/DPO infra carried over from Week 1-3 and re-tested (16/16 passing) — prerequisite scaffolding, not itself a listed Week 5 task.
-- **Thu 27 Aug:** Dataset description sheet (source + license for all 5 datasets, building on 08-24's citation audit) + manual inspection of examples/labels + duplication/contamination check (train/test overlap; Native-vs-Translated shared-content rationale).
-- **Fri 28 Aug:** Implement `build_dpo_dataset_from_pairs`'s real logic (finalizes the data-processing pipeline) + construct the DPO train/eval splits.
-- **Carries into the following week:** implement the RR%/Over-RR%/F1 evaluation script, run it on B1 to establish baseline performance, validate the computing estimate against a real run, produce the initial results table, and confirm checkpoint-resume works. This is the bulk of the remaining scope and realistically doesn't fit in the two days left this week — matching Week 3's own lesson that idealized time estimates don't survive contact with real Kaggle/Colab runs.
+Per the contract calendar, Week 5's technical work is dated as starting **Monday 24 Aug** — that is the nominal/theoretical distribution below. In practice, Mon 24-Tue 25 went to finalizing and presenting the Week 4 proposal instead (see [[Week4_Checklist.md]]), so today (**Wed 26 Aug**) absorbs the two days of backlog in addition to its own theoretical task, and the rest of the week proceeds as originally planned.
+
+**Theoretical distribution (if Week 5 had started exactly on the contract calendar):**
+
+| Day | Theoretical task(s) |
+| :---- | :---- |
+| Mon 24 | Dataset description sheet (source + license) + manual inspection of examples/labels |
+| Tue 25 | Duplication/contamination check + construct train/validation/test splits |
+| Wed 26 | Finalize the data-processing pipeline |
+| Thu 27 | Implement the evaluation metrics + evaluate the selected models without modification |
+| Fri 28 | Establish baseline performance, validate the computing estimate, produce the initial results table, verify checkpoint-resume, list principal failure modes |
+
+**Actual:**
+
+- **Mon 24 - Tue 25:** Week 4 proposal finalization and supervision meeting — no Week 5 technical work executed.
+- **Wed 26 Aug (today — catch-up day):** repository split + reusable QLoRA/DPO infra carried over (already done this morning), **plus** all of Monday's and Tuesday's theoretical backlog **plus** Wednesday's own item, executed together:
+  - dataset description sheet (source + license for all 5 datasets, building on 08-24's citation audit)
+  - manual inspection of examples/labels
+  - duplication/contamination check (UbuntuGuard train/test overlap; Native-vs-Translated shared-content rationale)
+  - construct the train/validation/test splits
+  - finalize the data-processing pipeline (`build_dpo_dataset_from_pairs`'s real logic: UbuntuGuard PASS/FAIL → ChatML for Native-DPO, NLLB-translated counterfactual for Translated-DPO)
+- **Thu 27 Aug:** back on the theoretical schedule — implement the evaluation metrics (RR%/Over-RR%/F1) + evaluate the selected models without modification (generate B1's raw results).
+- **Fri 28 Aug:** establish baseline performance (aggregate B1 into the results table), validate the computing estimate against the real runs, produce the initial results table, verify checkpoint-resume, list the principal failure modes.
 
 ## 🔒 Carried over from the Week 4 proposal
 - Native-DPO dataset = UbuntuGuard's own training split (PASS→chosen, FAIL→rejected) — no manual writing in target languages required.
