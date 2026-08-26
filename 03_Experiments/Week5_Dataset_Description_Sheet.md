@@ -109,6 +109,25 @@ Contract deliverable (Annex A, Week 5 — verbatim): "a dataset description shee
 
 ---
 
+## 6. TukaBench
+
+- **Role in this project:** strong candidate for **D1** (source prompts to build our own on-policy DPO pairs), **D2** (Refusal Rate evaluation — better language overlap than UbuntuGuard), and **D3** (Over-Refusal, via `afri-jbb-benign` — covers Hausa and Swahili, which HealthBench-Africa doesn't).
+- **Source:** Akinode, V., Li, S., Hamidouche, W., Zamir, W., Becker-Reshef, I., & Adelani, D. I. (2026). *TukaBench: A Culturally Grounded Jailbreak Benchmark for African Languages*. arXiv:2606.01322 — Mila (Quebec AI Institute), McGill University, Microsoft AI for Good Research Lab. **Same institution (McGill-NLP) as our target model (AfriqueQwen3.5-4B-50Langs)** — a good sign of ecosystem/tooling compatibility.
+- **Link:** https://huggingface.co/datasets/McGill-NLP/tukabench
+- **License:** ⚠️ **CC-BY-NC 4.0 — non-commercial research use only** (explicit on the card: "Released under CC-BY-NC 4.0. Non-commercial research use only."). More restrictive than the other four datasets (Apache-2.0/MIT/CC BY-SA 4.0) — fine for this research internship, but flag before any use beyond that.
+- **Composition (3 configs, 100 prompts each, 8 languages = 2,400 rows total):**
+  - `afri-jbb-harm`: JailbreakBench's 100 harmful prompts, human-translated, Western context preserved.
+  - `afri-jbb-benign`: JBB's 100 benign control prompts, human-translated — for over-refusal measurement.
+  - `afri-jbb-culture`: the same harmful prompts rewritten into African cultural contexts (locally relevant named entities/scenarios) before translation.
+- **Schema:** `Index, Goal (English source), Goal_Translation (target-language version, equal to Goal for the eng split)`.
+- **Languages/splits:** `eng, amh, hau, ibo, nya, swh, xho, yor` — 7 African + English. Good overlap with our target set (Hausa, Yoruba, Swahili all present, unlike HealthBench-Africa).
+- **Construction (hybrid MT + guaranteed human correction — stronger than UbuntuGuard/HealthBench-Africa's "optional"/absent validation, short of IrokoBench/Uhura's fully-human translation):** (1) machine translation — Google Translate for 6 languages, `AfriqueQwen-8B` (with MAFAND few-shot examples) for Yoruba specifically, since Google Translate didn't reliably preserve Yoruba diacritics; (2) quality estimation via SSA-COMET-QE, flagging anything below 0.50; (3) **human post-editing by two native-speaker annotators per language**, correcting the machine output (and, for `afri-jbb-culture`, performing the cultural adaptation itself). Not purely native-authored, but every row is guaranteed human-corrected, not just spot-checked.
+- **⚠️ No raw pre-edit machine-translation output is released** — only the final human-post-edited `Goal_Translation`. Checked directly: doesn't provide a native-vs-raw-MT counterfactual pair either, same limitation as Uhura/IrokoBench for D2/D4's purposes.
+- **Relevant finding from the paper itself (useful context, not our own result):** across closed and open models, prompting in African languages reduces refusal relative to English, and culturally-adapted prompts (`afri-jbb-culture`) reduce it further still — direct prior evidence for the general phenomenon our own H1 is built around. The paper also reports **reduced LLM-as-a-judge reliability in low-resource languages** — a methodological warning worth weighing against our own proposal's "automated classification + 10% manual cross-check" evaluation procedure (section 9); the 10% figure may be worth revisiting given this finding.
+- **Note:** the paper's abstract describes four experimental conditions (including GPT-5.2-validated human-curated prompts and code-switched prompts), but the public HF release only ships the three configs above — the other two conditions from the paper aren't in this dataset as released.
+
+---
+
 ## Open items before this sheet is complete
 - [x] **Decide how to handle UbuntuGuard's missing training split** — resolved 2026-08-26: proceed with a self-carved, per-language 80/20 row_id split of the released test data (401 train / 100 eval pairs), documented above. Email to the author pending in parallel, not blocking.
 - [x] Confirm UbuntuGuard's actual license — paper states CC BY 4.0 (arXiv:2601.12696v3); repo just lacks a LICENSE file. Email to the author also asks for confirmation/a repo update.
