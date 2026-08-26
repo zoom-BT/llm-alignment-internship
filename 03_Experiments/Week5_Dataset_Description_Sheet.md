@@ -23,6 +23,26 @@ Contract deliverable (Annex A, Week 5 — verbatim): "a dataset description shee
   - Countries: Ghana (658), South Africa (581), Nigeria (520), Kenya (435), Uganda (74), Malawi (39).
   - 2,307 lines collapse to **851 unique `row_id`s** (each `row_id` = one underlying prompt, evaluated against 1-4 conditions/models): 501 have exactly one PASS + one FAIL entry (directly usable as a DPO chosen/rejected pair), 271 have 4 entries, 71 have 3, 8 are unpaired (single entry, unusable for DPO as-is).
   - **`crosslingual` vs `translated` are not simple duplicates:** same `row_id`s, same label counts, but the `policy` text differs — in the sampled row, `crosslingual`'s policy stayed in **English** while `translated`'s policy was itself translated into the target language (Swahili in the sample). This is a different axis than what the proposal assumed ("expert translation vs. NLLB translation") — it looks more like "policy language kept English vs. policy also translated," not two translation-quality tiers of the same content. Needs a closer read of the paper's methodology section before mapping either file onto Native-DPO or Translated-DPO.
+- **Decision (2026-08-26):** proceed with the released test data rather than wait — carve our own train/eval split out of it, since no training split has ever been committed to the repo (confirmed via full git history, not just current file listing; see below). In parallel, emailing the author (Paul Okewunmi, commit author on the repo) to ask whether a training split is coming or already exists elsewhere.
+- **Git history check (rules out "just a stale README"):** every file ever added, across all 5 commits: `.gitignore`, `README.md` (initial commit) -> `translate_gmt.py` -> `evaluate.py` + the 3 test JSONL files (`Add code and data for model evaluation`, 2026-04-15). The "Data and Code Coming Soon......." line is indeed stale *for the evaluation side* (that commit added real eval code/data without removing the placeholder line) — but no training file has ever existed in this repo at any point, so the training-split gap itself is real, not a documentation lag.
+- **Our own train/eval split (row_id-level, to avoid contamination):** using the 501 `row_id`s that have exactly one PASS + one FAIL entry (unambiguous chosen/rejected pairs), split 80/20 **per language** (proportional, not global, so low-count languages like Nyanja aren't wiped out of one side):
+
+  | Language | Total pairs | Train | Eval |
+  | :---- | ---: | ---: | ---: |
+  | Ewe | 99 | 79 | 20 |
+  | Akan | 89 | 71 | 18 |
+  | Swahili | 76 | 61 | 15 |
+  | Zulu | 59 | 47 | 12 |
+  | Xhosa | 55 | 44 | 11 |
+  | Hausa | 52 | 42 | 10 |
+  | Yoruba | 29 | 23 | 6 |
+  | Igbo | 21 | 17 | 4 |
+  | Luganda | 15 | 12 | 3 |
+  | Nyanja | 6 | 5 | 1 |
+  | **Total** | **501** | **401** | **100** |
+
+  A `row_id` assigned to train never appears in eval (and vice versa) — this is what "investigate duplication and contamination" resolves to for this dataset. The 271 four-entry and 71 three-entry `row_id`s (multiple PASS/FAIL variants per prompt) are held out of this initial split; revisit as a way to grow the training pool if 401 pairs proves too small once DPO training actually runs.
+  - `crosslingual`'s train/eval split doubles as `translated`'s, since both files share the same `row_id`s — keeps Native-DPO (crosslingual) and Translated-DPO (translated) using the *same* underlying prompts on each side, matching the confound-isolation design from 2026-08-24.
 - **Technical description (pending):** _awaiting further details_
 
 ---
@@ -77,7 +97,7 @@ Contract deliverable (Annex A, Week 5 — verbatim): "a dataset description shee
 ---
 
 ## Open items before this sheet is complete
-- [ ] **Decide how to handle UbuntuGuard's missing training split** — this blocks the Native-DPO plan as currently written in the proposal; options are (a) wait/check for a repo update, (b) contact the authors, or (c) carve a training subset out of the released test data with an explicit train/eval separation that avoids the contamination the contract's Week 5 task asks us to check for
+- [x] **Decide how to handle UbuntuGuard's missing training split** — resolved 2026-08-26: proceed with a self-carved, per-language 80/20 row_id split of the released test data (401 train / 100 eval pairs), documented above. Email to the author pending in parallel, not blocking.
 - [ ] Confirm UbuntuGuard's actual license directly (email authors / check for an updated repo commit)
 - [ ] Read UbuntuGuard's methodology section to correctly map `crosslingual` vs `translated` onto (or replace) the proposal's Native-DPO/Translated-DPO distinction
 - [ ] Confirm AfriHate's license from the HF dataset card

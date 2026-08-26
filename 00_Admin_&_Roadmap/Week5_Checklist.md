@@ -9,8 +9,8 @@
 - [ ] finalize the data-processing pipeline; — implement `build_dpo_dataset_from_pairs`'s real logic: UbuntuGuard PASS→chosen/FAIL→rejected into ChatML for Native-DPO, plus the NLLB-translated counterfactual (same English source content) for Translated-DPO
 - [ ] manually inspect dataset examples and labels; — spot-check UbuntuGuard PASS/FAIL pairs, AfriHate hate/abusive/normal labels, HealthBench-Africa prompts across the target languages (Hausa, Yoruba, Swahili, Nigerian Pidgin)
 - [ ] document the source and license of each dataset; — in progress in `03_Experiments/Week5_Dataset_Description_Sheet.md`; two license/coverage flags open (UbuntuGuard's license unconfirmed, HealthBench-Africa doesn't cover Hausa/Swahili)
-- [ ] construct the training, validation, and test splits where applicable; — UbuntuGuard's own train/test split (train for DPO, test reserved for RR% evaluation, no overlap); A1 ablation subsets (250/500/1000)
-- [ ] investigate duplication and contamination; — confirm no overlap between UbuntuGuard's train and test splits; document why Native-DPO and Translated-DPO intentionally sharing source content is by design (isolates translation quality per H1), not contamination
+- [x] construct the training, validation, and test splits where applicable; — UbuntuGuard ships no training split (confirmed via full git history, not just a stale README); self-carved a per-language 80/20 row_id split instead (401 train / 100 eval pairs) — see `Week5_Dataset_Description_Sheet.md`. A1 ablation now capped by this pool (max ~401, not the proposal's original 1000)
+- [x] investigate duplication and contamination; — confirmed no `row_id` appears on both sides of the 401/100 split; documented why Native-DPO (crosslingual) and Translated-DPO (translated) sharing the same `row_id`s on each side is by design, not contamination
 - [ ] implement the evaluation metrics; — RR%, Over-RR%, F1-AfriHate (proposal section 9)
 - [ ] evaluate the selected models without modification; — B1 (AfriqueQwen-Raw) and the Qwen3.5-4B-Base control, both unaligned
 - [ ] establish baseline performance; — Baseline 1 (B1) numbers on UbuntuGuard/AfriHate/HealthBench-Africa
