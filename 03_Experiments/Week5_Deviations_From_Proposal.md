@@ -2,6 +2,8 @@
 
 The approved proposal (`04_Weekly_Reports/Week_04_Research_Proposal.md`, approved 2026-08-25) is **not being edited** to reflect what's below — per contract discipline, a supervisor-approved research design stays as-is; deviations discovered during execution are logged separately and reported alongside results, not silently folded back into the original document.
 
+**Decision (2026-08-26, final for now):** proceed as a proof-of-concept scoped to the released UbuntuGuard test data (401/100 split, D1) rather than wait on the authors. Results from this phase should be framed explicitly as a POC — validating the pipeline and the H1/H2/H3 comparisons work end-to-end — not as the full-scale study the proposal's original numbers (train_size up to 1000, A1 ablation) assumed. Searching in parallel for a complementary dataset that can properly fill the native-translation gap (D2/D4) — see the search prompt below.
+
 ---
 
 ## D1. UbuntuGuard has no training split (proposal section 7, D1)
@@ -43,6 +45,23 @@ The approved proposal (`04_Weekly_Reports/Week_04_Research_Proposal.md`, approve
 **Actual:** per the paper's own methodology, PASS/FAIL dialogues were generated entirely by Llama-3.1-405B/Qwen3-235B and passed through *automated structural checks only* — no human ever verified that a "FAIL" dialogue genuinely violates its policy, or that a "PASS" dialogue genuinely complies. Separately, translation quality was calibrated by a single native speaker per language on just 20 sampled pairs (80 total, 4 of 10 languages: Swahili, Igbo, Yoruba, Hausa) — the paper states this explicitly as a limitation ("relies on a single human validator for a subset of four languages due to the scarcity of available expert native speakers"), and the resulting 70% threshold was then applied automatically, with zero human validation, to the remaining six languages (Zulu, Xhosa, Ewe, Akan, Luganda, Nyanja).
 
 **Consequence:** the DPO training signal itself (not just the language of the text) carries unverified label quality — a real risk to flag in our own risk/limitations section (proposal section 13) when results are written up, and a natural fourth question for the author email (added).
+
+## Search prompt for finding a complementary dataset (for Google Deep Search / similar)
+
+Targets the two open gaps this document tracks: a genuine native-vs-machine-translation counterfactual for H1 (D2/D4), and more African-language safety training volume than UbuntuGuard's unreleased train split (D1).
+
+> I'm looking for datasets to fine-tune and evaluate language models on AI safety behavior (refusal of harmful requests, hate-speech/toxicity moderation) in African languages, for a DPO (preference-pair) training setup. I need candidates that satisfy as many of these as possible:
+>
+> 1. Contains paired or comparable "safe/compliant" vs. "unsafe/violating" responses (preference pairs, PASS/FAIL labels, or chosen/rejected pairs) to safety-relevant prompts — not just single-label classification data.
+> 2. Covers at least one of: Hausa, Yoruba, Swahili, Nigerian Pidgin, Igbo, Zulu, Xhosa, Akan, Ewe, Luganda, Amharic.
+> 3. Critically: the African-language content should be **natively authored or professionally/expert-translated**, not solely machine-translated (e.g. via Google Translate or NLLB) with only light automated quality filtering — I need to be able to tell which one it is from the dataset's own documentation.
+> 4. Labels/annotations should be **human-validated** (not purely LLM-generated and structurally checked), ideally with a description of who validated them and how many people were involved.
+> 5. Publicly available (Hugging Face, GitHub, or similar), with a clearly stated license (prefer CC BY, CC BY-SA, MIT, or Apache 2.0), published 2023 or later.
+> 6. Reasonable scale for LLM fine-tuning — at least several hundred examples per language, ideally low thousands.
+>
+> For each candidate you find, report: name, link, exact language coverage, how it was constructed (native vs. machine-translated, human-validated or not), size, license, and how confident you are in each of these claims based on what the source actually states (not what a paper's abstract implies).
+
+Look for candidates that could either replace or supplement UbuntuGuard's `crosslingual`/`translated` test files for the H1 comparison specifically — priority is finding something that's *actually* native-vs-machine-translated, which UbuntuGuard turned out not to be (D2/D4).
 
 ## Dataset composition, for reference (Table 3 of the paper)
 
