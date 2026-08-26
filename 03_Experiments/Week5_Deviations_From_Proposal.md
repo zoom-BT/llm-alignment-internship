@@ -23,9 +23,23 @@ The approved proposal (`04_Weekly_Reports/Week_04_Research_Proposal.md`, approve
 | Usable preference pairs | 501 | **1,089** |
 | Train / eval | 401 / 100 | **868 / 221** |
 
-Verified contamination-free on the real data: zero `row_id` overlap between splits, and zero identical prompts across splits (the stricter check — two pairs from one `row_id` share a prompt verbatim, so splitting at pair level would have leaked it).
+**Cross-lingual contamination found and fixed (2026-08-26).** A `row_id`-level split is not coarse enough. `base_id` looks like `GHA1002_llama` — a source-question id plus the generating model — and the stem `GHA1002` recurs across languages: 265 of the 566 underlying questions appear in more than one. Measured on the real corpus, splitting at `row_id` level put **85 of 156 eval questions (54%) into training under a different language**. For a study about cross-lingual safety transfer on a multilingual backbone that is disqualifying: it would measure memorisation and report it as transfer. The split now groups at `base_stem` level, filling languages rarest-first so the shared stems don't all get absorbed by Swahili and starve Nyanja.
 
-Per-language split (train / eval): Swahili 160/47, Ewe 133/32, Zulu 119/33, Akan 119/30, Hausa 104/24, Xhosa 99/24, Yoruba 56/12, Igbo 35/9, Luganda 29/5, Nyanja 14/5.
+Final split: **869 train / 220 eval**, at essentially no cost in volume. Verified on the real data, all three checks at zero: no shared `row_id`, no shared `base_stem`, no identical prompt text across splits. Every language lands at 20-21% eval.
+
+Per-language split (train / eval): Swahili 165/42, Ewe 132/33, Zulu 122/30, Akan 119/30, Hausa 102/26, Xhosa 98/25, Yoruba 54/14, Igbo 35/9, Luganda 27/7, Nyanja 15/4.
+
+**Full audit of the released repository (2026-08-26).** All three JSONL files checked, not just the one used for training; the repo holds 8 files across 5 commits, working tree clean, so what is local is the entirety of what was published.
+
+| File | Rows | Unique `row_id` | Usable pairs | Content |
+| :---- | ---: | ---: | ---: | :---- |
+| `..._all_english_only` | 2,449 | 903 | 1,150 | English dialogue, English policy |
+| `..._crosslingual` | 2,307 | 851 | 1,089 | African dialogue, **English** policy |
+| `..._translated` | 2,307 | 851 | 1,089 | African dialogue, **localised** policy |
+
+Every one of the eleven per-language counts matches the paper's Table 3 test column exactly (Akan 313, Ewe 345, Hausa 278, Igbo 98, Luganda 74, Nyanja 39, Swahili 435, Xhosa 263, Yoruba 144, Zulu 318, English 2,449). The released test data is precisely what the paper documents — no shortfall on that side.
+
+**`crosslingual` and `translated` differ in the `policy` field only** — all 2,307 rows differ there, and zero differ in `transcript`, `metadata`, `theme` or `domain`. The transcripts are byte-identical. So the two files are the same 1,089 dialogues under two conditions and **the pools do not add up**. This settles D2 empirically rather than by reading the paper: the axis UbuntuGuard actually offers is the language of the *policy*, not the provenance of the *content*. It does hand us one clean controlled variable for free — same dialogue, policy language as the only difference.
 
 **Consequence for the proposal's A1 ablation (section 11):** largely restored. At 401 the 250/500/1000 sweep was unreachable; at 868 it runs as 100/200/868 — same shape, and D6 makes A1 the more relevant of the two planned ablations. `config.yaml`'s `train_size` is 868, still short of the proposal's 1000 but no longer a different order of magnitude.
 
@@ -33,6 +47,25 @@ Per-language split (train / eval): Swahili 160/47, Ewe 133/32, Zulu 119/33, Akan
 
 1. **PASS and FAIL diverge at the *first* assistant response, not the last** (839 of 843 dialogues). The pairs are therefore cut at the first divergent turn, discarding the rest of the dialogue. This is the right cut rather than a loss: the later turns of a FAIL transcript are conditioned on an already-unsafe answer, so keeping them would blur "produced an unsafe answer" together with "kept going down that path". It does mean the DPO training signal is effectively single-turn, despite UbuntuGuard being a multi-turn benchmark — worth stating in the write-up. Three pairs diverge on a *user* turn (i.e. answer different questions) and are dropped.
 2. **`max_seq_length` was wrong at 1024.** Measured with the actual AfriqueQwen tokenizer, formatted pairs run to a median of 819 tokens and a maximum of 1,570 — 1024 would have silently truncated 13.8% of examples. Truncating a DPO response removes the very signal being trained on, so this would have produced plausible-looking but meaningless runs. Raised to 2048 (zero truncation). The safety policy in the system message is the bulk of it (~2,700 chars median, against ~245 for the user turn).
+
+**D7. The evaluation pool is far smaller than first stated — and the statistics have to change accordingly.**
+
+An earlier note in this file put the held-out African evaluation pool at "~1,900 prompts". That was wrong: it counted *rows*, and UbuntuGuard carries several responses per prompt. The corrected inventory, after removing everything touched by DPO training:
+
+| Pool | Size | Notes |
+| :---- | ---: | :---- |
+| African questions free of training | 126 | distinct `base_stem`s |
+| African eval prompts | **192** | distinct `row_id`s — a question evaluated in 2-3 languages counts once per language |
+| English control questions | **337** | `base_stem`s present in the English file and in **no** African file |
+
+Per-language African eval prompts: Swahili 34, Ewe 32, Akan 29, Hausa 23, Zulu 22, Xhosa 21, Yoruba 11, Igbo 11, Luganda 7, Nyanja 2.
+
+**Consequences, all of which shape how results get reported:**
+
+1. **Use paired tests, not independent-proportion tests.** All four baselines (B1-B4) are evaluated on the *same* prompts, so the right instrument is McNemar's test on the discordant cases, not the Fisher's exact used in the Week 4 pilot. Pairing is what makes n=192 workable: it removes between-prompt variance rather than absorbing it into the noise. Reporting Fisher on paired data would understate the significance of a real effect.
+2. **Do not report per-language RR%.** Nyanja has 2 eval prompts and Luganda 7. Aggregate results, and give the per-language counts in an appendix so the reader can see why no per-language claim is made. Grouping into high/low-resource bands is the most granularity this pool supports.
+3. **The 337 English-only questions are a genuine, contamination-free control.** They appear in no African file, so nothing about them leaks through DPO training on African pairs. They give a clean measurement of the English-vs-African refusal gap — the phenomenon the whole project is premised on — at a sample size larger than the African side itself.
+4. **The `translated` file doubles the evaluation conditions without new content.** Each of the 192 prompts can be run under an English policy and a localised policy. Those observations are not independent, so they support a paired within-prompt comparison of policy language, not a doubled n.
 
 **Incidental measurement, relevant to H2:** AfriqueQwen's tokenizer has a 248,044-token vocabulary against roughly 151,000 for stock Qwen, and encodes this African-language corpus at about 4.1 characters per token — far better than the 2.5 a standard multilingual tokenizer would be expected to manage on these scripts. The CPT backbone's vocabulary extension is measurably doing its job, before any training has been run. Cheap to report and directly supportive of H2's premise.
 
