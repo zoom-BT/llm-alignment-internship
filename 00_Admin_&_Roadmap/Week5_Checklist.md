@@ -1,6 +1,6 @@
 # 🎯 Week 5: Baselines, Data, and Experimental Infrastructure
 
-**Calendar:** nominally 2026-08-24 (Mon) – 2026-08-28 (Fri) per the contract. In practice, Monday and Tuesday went to finalizing and presenting the Week 4 proposal (approved 2026-08-25, minor formatting requests only, not blocking) — so this week's actual task list compresses into Wednesday–Friday, with the remainder carrying into the following week. See [[Week4_Checklist.md]] for the approval-gate resolution.
+**Calendar:** 2026-08-24 (Mon) – 2026-08-28 (Fri) per the contract. Tasks below are tracked against this nominal calendar regardless of which day the underlying work actually happened to get done — see [[Week4_Checklist.md]] for the approval-gate resolution (cleared 2026-08-25).
 
 ## 🎯 Objective (contract, Annex A — verbatim)
 > "WEEK 5: BASELINES, DATA, AND EXPERIMENTAL INFRASTRUCTURE — During Week 5, the Intern shall: finalize the data-processing pipeline; manually inspect dataset examples and labels; document the source and license of each dataset; construct the training, validation, and test splits where applicable; investigate duplication and contamination; implement the evaluation metrics; evaluate the selected models without modification; establish baseline performance; estimate the computing time, memory requirements, and financial cost where applicable; produce an initial table of results; verify that interrupted experiments can resume from checkpoints."
@@ -8,7 +8,7 @@
 ## ✅ Tasks (contract, verbatim) — mapped to this topic
 - [ ] finalize the data-processing pipeline; — implement `build_dpo_dataset_from_pairs`'s real logic: UbuntuGuard PASS→chosen/FAIL→rejected into ChatML for Native-DPO, plus the NLLB-translated counterfactual (same English source content) for Translated-DPO
 - [ ] manually inspect dataset examples and labels; — spot-check UbuntuGuard PASS/FAIL pairs, AfriHate hate/abusive/normal labels, HealthBench-Africa prompts across the target languages (Hausa, Yoruba, Swahili, Nigerian Pidgin)
-- [x] document the source and license of each dataset; — done 2026-08-24 during the citation audit (UbuntuGuard/AfriHate/HealthBench-Africa/Uhura-TruthfulQA/IrokoBench, all CC BY 4.0 or open on HF, verified against arXiv/HF directly)
+- [ ] document the source and license of each dataset; — in progress in `03_Experiments/Week5_Dataset_Description_Sheet.md`; two license/coverage flags open (UbuntuGuard's license unconfirmed, HealthBench-Africa doesn't cover Hausa/Swahili)
 - [ ] construct the training, validation, and test splits where applicable; — UbuntuGuard's own train/test split (train for DPO, test reserved for RR% evaluation, no overlap); A1 ablation subsets (250/500/1000)
 - [ ] investigate duplication and contamination; — confirm no overlap between UbuntuGuard's train and test splits; document why Native-DPO and Translated-DPO intentionally sharing source content is by design (isolates translation quality per H1), not contamination
 - [ ] implement the evaluation metrics; — RR%, Over-RR%, F1-AfriHate (proposal section 9)
@@ -19,38 +19,22 @@
 - [ ] verify that interrupted experiments can resume from checkpoints. — confirm the `cleanup_checkpoint_dir`/`trainer.save_model` pattern carried over from Week 1-3 still works for this pipeline
 
 ## 📥 Deliverables (contract, verbatim)
-- [ ] a dataset description sheet;
+- [ ] a dataset description sheet; — `03_Experiments/Week5_Dataset_Description_Sheet.md`
 - [ ] a reproducible evaluation script;
 - [ ] baseline results;
 - [ ] a computing-resource estimate;
 - [ ] an initial version of the main results table;
 - [ ] a list of the principal failure modes.
 
-## 📅 Schedule: theoretical start vs. actual catch-up
+## 📅 Schedule
 
-Per the contract calendar, Week 5's technical work is dated as starting **Monday 24 Aug** — that is the nominal/theoretical distribution below. In practice, Mon 24-Tue 25 went to finalizing and presenting the Week 4 proposal instead (see [[Week4_Checklist.md]]), so today (**Wed 26 Aug**) absorbs the two days of backlog in addition to its own theoretical task, and the rest of the week proceeds as originally planned.
-
-**Theoretical distribution (if Week 5 had started exactly on the contract calendar):**
-
-| Day | Theoretical task(s) |
+| Day | Task(s) |
 | :---- | :---- |
 | Mon 24 | Dataset description sheet (source + license) + manual inspection of examples/labels |
 | Tue 25 | Duplication/contamination check + construct train/validation/test splits |
 | Wed 26 | Finalize the data-processing pipeline |
 | Thu 27 | Implement the evaluation metrics + evaluate the selected models without modification |
 | Fri 28 | Establish baseline performance, validate the computing estimate, produce the initial results table, verify checkpoint-resume, list principal failure modes |
-
-**Actual:**
-
-- **Mon 24 - Tue 25:** Week 4 proposal finalization and supervision meeting — no Week 5 technical work executed.
-- **Wed 26 Aug (today — catch-up day):** repository split + reusable QLoRA/DPO infra carried over (already done this morning), **plus** all of Monday's and Tuesday's theoretical backlog **plus** Wednesday's own item, executed together:
-  - dataset description sheet (source + license for all 5 datasets, building on 08-24's citation audit)
-  - manual inspection of examples/labels
-  - duplication/contamination check (UbuntuGuard train/test overlap; Native-vs-Translated shared-content rationale)
-  - construct the train/validation/test splits
-  - finalize the data-processing pipeline (`build_dpo_dataset_from_pairs`'s real logic: UbuntuGuard PASS/FAIL → ChatML for Native-DPO, NLLB-translated counterfactual for Translated-DPO)
-- **Thu 27 Aug:** back on the theoretical schedule — implement the evaluation metrics (RR%/Over-RR%/F1) + evaluate the selected models without modification (generate B1's raw results).
-- **Fri 28 Aug:** establish baseline performance (aggregate B1 into the results table), validate the computing estimate against the real runs, produce the initial results table, verify checkpoint-resume, list the principal failure modes.
 
 ## 🔒 Carried over from the Week 4 proposal
 - Native-DPO dataset = UbuntuGuard's own training split (PASS→chosen, FAIL→rejected) — no manual writing in target languages required.
