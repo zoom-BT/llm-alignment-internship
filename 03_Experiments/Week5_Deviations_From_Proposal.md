@@ -8,7 +8,7 @@ The approved proposal (`04_Weekly_Reports/Week_04_Research_Proposal.md`, approve
 
 **Planned:** train Native-DPO directly on UbuntuGuard's training split (PASS→chosen, FAIL→rejected).
 
-**Actual:** confirmed via the repo's full git history (5 commits, `github.com/hemhemoh/UbuntuGuard`) that no training file has ever been committed — only three test-split JSONL files exist, added in the latest commit (2026-04-15). The paper (arXiv:2601.12696v3) reports train/test split sizes in its Table 3 and doesn't state whether guardian models were trained on that split or when/whether it will be released publicly.
+**Actual:** confirmed via the repo's full git history (5 commits, `github.com/hemhemoh/UbuntuGuard`) that no training file has ever been committed — only three test-split JSONL files exist, added in the latest commit (2026-04-15). The paper (arXiv:2601.12696v3) reports train/test split sizes in its Table 3, but its only availability language ("Our benchmark and code can be found online," abstract + footnote 1) never explicitly commits to releasing the training split specifically — checked the abstract, introduction, ethics, limitations, acknowledgments, and appendix, none clarify this. Not a broken promise, just genuinely ambiguous — hence asking directly rather than assuming either way.
 
 **Resolution:** self-carved a per-language stratified 80/20 split of the 501 clean PASS/FAIL pairs in the released test data (401 train / 100 eval, no `row_id` overlap between sides) — see `Week5_Dataset_Description_Sheet.md` for the full table. `config.yaml`'s `dpo.train_size` corrected from the proposal's 1000 to 401 accordingly.
 

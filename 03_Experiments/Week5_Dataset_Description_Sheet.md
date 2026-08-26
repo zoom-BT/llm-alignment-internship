@@ -10,7 +10,7 @@ Contract deliverable (Annex A, Week 5 — verbatim): "a dataset description shee
 - **Source:** Abdullahi, T., Mgonzo, M., Owodunni, A. T., Singh, R., & Eickhoff, C. (2026). *UbuntuGuard: A Culturally-Grounded Policy Benchmark for Equitable AI Safety in African Languages*. arXiv:2601.12696.
 - **Link:** https://github.com/hemhemoh/UbuntuGuard (not on Hugging Face — data lives in the repo's `/data` directory as JSONL)
 - **License:** the paper itself (arXiv:2601.12696v3) states "License: CC BY 4.0" at the top — restores the proposal's original assumption. The GitHub repo just never got a `LICENSE` file added; a repo hygiene gap, not evidence the data is unlicensed. Confirming directly with the authors anyway (see the email below) before relying on this for anything beyond internal research use.
-- **⚠️ Blocker: no training split shipped yet.** The repo's own `README.md` states *"Data and Code Coming Soon......."* — as of this clone, `/data` contains only three **test** files:
+- **⚠️ Blocker: no training split in the released data, and no public-release commitment either way.** The paper's only availability language is "Our benchmark and code can be found online" (abstract) and a footnote pointing to the GitHub repo — neither explicitly promises the Table 3 training split specifically; "benchmark" most likely just means what's needed to reproduce the reported F1 scores (i.e. the test split). As of this clone, `/data` contains only three **test** files:
   - `Ubuntu_guard_test_all_english_only.jsonl` — 2,449 lines, English only
   - `Ubuntu_guard_test_crosslingual.jsonl` — 2,307 lines, 10 African languages
   - `Ubuntu_guard_test_translated.jsonl` — 2,307 lines, same languages/labels as crosslingual
