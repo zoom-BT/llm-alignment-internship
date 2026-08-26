@@ -79,11 +79,15 @@ Contract deliverable (Annex A, Week 5 — verbatim): "a dataset description shee
 ## 4. Uhura-TruthfulQA
 
 - **Role in this project:** D3 (Over-Refusal Rate / utility evaluation, culture & knowledge questions).
-- **Source:** Masakhane initiative; translation of TruthfulQA.
+- **Source:** Masakhane initiative; TruthfulQA (Lin et al., 2022) translated by **professional human translators** (not machine translation — a genuine positive contrast to UbuntuGuard/HealthBench-Africa, both confirmed machine-translated). See the Uhura paper: *A Benchmark for Evaluating Scientific Question Answering and Truthfulness in Low-Resource African Languages*.
 - **Link:** https://huggingface.co/datasets/masakhane/uhura-truthfulqa
-- **License:** MIT.
-- **Languages:** Amharic, Hausa, Northern Sotho (Sepedi), Yoruba, Zulu.
-- **Technical description (pending):** _awaiting details_
+- **License:** MIT (explicitly confirmed on the dataset card).
+- **⚠️ Card inconsistency resolved:** the card's prose says "six languages" but names only five (Amharic, Hausa, Northern Sotho/Sepedi, Yoruba, Zulu) — checked the actual dataset viewer directly: the sixth is **Swahili**, just missing from the prose paragraph. Same pattern as AfriHate's `tweet`/`text` and HealthBench-Africa's `ideal_responses`/`ideal_completions_data` mismatches — the prose descriptions on these cards keep drifting from the real data. **This closes part of the Hausa/Swahili gap flagged for HealthBench-Africa** — Uhura covers both, just not for the health domain specifically.
+- **Loading:** configs are named `{language_code}_{task}` (e.g. `am_generation`, `am_multiple_choice`, `sw_generation`, ...) — language and task are combined in one config string, not separate `load_dataset` arguments: `load_dataset("masakhane/uhura-truthfulqa", "am_generation")`.
+- **Two task formats per language:**
+  - `multiple_choice`: `question`, `mc1_targets` (dict: `choices` list of 4-5 strings, `labels` list with a single `1` for the correct choice, rest `0`).
+  - `generation`: `type` (Adversarial/Non-Adversarial), `category` (e.g. Law, Health, Sociology), `question`, `best_answer`, `correct_answers` (list), `incorrect_answers` (list), `source` (URL).
+- **Splits (per config):** `train`: 8, `test`: 809 — totals 817, matching the original English TruthfulQA's exact question count; same split size appears consistent across language configs (translations of the same 817 questions).
 
 ---
 
@@ -105,7 +109,7 @@ Contract deliverable (Annex A, Week 5 — verbatim): "a dataset description shee
 - [x] Read UbuntuGuard's methodology section — `crosslingual`/`translated` are the paper's Cross-lingual (LRL-EN) and Full Localization (LRL-LRL) conditions, a policy-language axis, not a translation-quality axis. Repurposing them for H1 is a documented deviation, not a natural fit — see `Week5_Deviations_From_Proposal.md`.
 - [x] Confirm AfriHate's license — `apache-2.0`, confirmed directly against the HF dataset card
 - [ ] Check AfriHate's exact per-language split sizes via the `datasets` library (not stated on the card)
-- [ ] Resolve the Hausa/Swahili gap in HealthBench-Africa's language coverage for the Over-Refusal evaluation
+- [x] Resolve the Hausa/Swahili gap for the Over-Refusal evaluation — partially: Uhura-TruthfulQA covers both (its "six languages" claim was under-documented, actually includes Swahili). Still a gap specifically for the *health* domain, since HealthBench-Africa itself doesn't cover Hausa/Swahili.
 - [ ] Confirm HealthBench-Africa's license directly (still only an indirect "follows the original" statement)
 - [ ] Confirm IrokoBench's exact language list against the languages actually used in this project
 - [ ] Decide how to stage/centralize these datasets on Kaggle (next step, once the technical descriptions below are in)
