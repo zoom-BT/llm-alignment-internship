@@ -52,10 +52,12 @@ Contract deliverable (Annex A, Week 5 — verbatim): "a dataset description shee
 - **Role in this project:** D2 (hate-speech/moderation F1 evaluation).
 - **Source:** Muhammad, S. H., et al. (2025). *AfriHate: A Multilingual Collection of Hate Speech and Abusive Language Datasets for African Languages*. arXiv:2501.08284.
 - **Link:** https://huggingface.co/datasets/afrihate/afrihate
-- **Schema:** `id, tweet, label` (`Hate`, `Abusive`, or `Normal`)
-- **License:** _to confirm — not yet checked directly against the HF dataset card_
-- **Languages:** 15 African languages.
-- **Technical description (pending):** _awaiting details_
+- **Schema:** `id, tweet, label` (`Hate`, `Abusive`, or `Normal`). Note: the HF card's own "How to Use" code example inconsistently shows a `text` field and a lowercase `"abusive"` label — confirmed this mismatch exists on the actual card itself, not introduced by us; use `tweet`/capitalized labels per the field table, not the example.
+- **License:** confirmed `apache-2.0` (checked directly against the HF dataset card, 2026-08-26).
+- **Languages / configs (15, ISO 639-3 codes, each independently loadable via `load_dataset("afrihate/afrihate", "<code>")`):** Algerian Arabic (`arq`), Amharic (`amh`), Igbo (`ibo`), Kinyarwanda (`kin`), Hausa (`hau`), Moroccan Arabic (`ary`), Nigerian Pidgin (`pcm`), Oromo (`orm`), Somali (`som`), Swahili (`swa`), Tigrinya (`tir`), Twi (`twi`), isiXhosa (`xho`), Yoruba (`yor`), isiZulu (`zul`).
+- **Split sizes:** not stated on the HF dataset card — need to check directly with the `datasets` library if exact per-language/per-split counts are needed before running the F1 evaluation.
+- **Baseline models reported in the source paper (context only, not our target models):** AfriBERTa-large, AfriTeVa V2 base, AfroXLMR, AfroXLMR-76L, SetFit (LabSE), InkubaLM-0.4B, mT0-small, BLOOMZ-7B, Mistral-7B, Aya-23-35B, LLaMA-3.1 (8B/70B), Gemma-2 (9B/27B) — no results table on the card itself, only prose ("performance varies significantly by language").
+- **Motivation (source's own framing):** built to address Global South hate-speech-detection failure modes — absence of moderation or over-censorship, context-free keyword spotting, missed targeted campaigns against minorities, and over-surveillance of high-profile accounts relative to vulnerable communities.
 
 ---
 
@@ -100,7 +102,8 @@ Contract deliverable (Annex A, Week 5 — verbatim): "a dataset description shee
 - [x] **Decide how to handle UbuntuGuard's missing training split** — resolved 2026-08-26: proceed with a self-carved, per-language 80/20 row_id split of the released test data (401 train / 100 eval pairs), documented above. Email to the author pending in parallel, not blocking.
 - [x] Confirm UbuntuGuard's actual license — paper states CC BY 4.0 (arXiv:2601.12696v3); repo just lacks a LICENSE file. Email to the author also asks for confirmation/a repo update.
 - [x] Read UbuntuGuard's methodology section — `crosslingual`/`translated` are the paper's Cross-lingual (LRL-EN) and Full Localization (LRL-LRL) conditions, a policy-language axis, not a translation-quality axis. Repurposing them for H1 is a documented deviation, not a natural fit — see `Week5_Deviations_From_Proposal.md`.
-- [ ] Confirm AfriHate's license from the HF dataset card
+- [x] Confirm AfriHate's license — `apache-2.0`, confirmed directly against the HF dataset card
+- [ ] Check AfriHate's exact per-language split sizes via the `datasets` library (not stated on the card)
 - [ ] Resolve the Hausa/Swahili gap in HealthBench-Africa's language coverage for the Over-Refusal evaluation
 - [ ] Confirm IrokoBench's exact language list against the languages actually used in this project
 - [ ] Decide how to stage/centralize these datasets on Kaggle (next step, once the technical descriptions below are in)
