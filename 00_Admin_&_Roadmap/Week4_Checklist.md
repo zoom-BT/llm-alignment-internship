@@ -52,7 +52,7 @@
 
 All 15 sections present in `04_Weekly_Reports/Week_04_Research_Proposal.md` (English submission version; French working draft kept alongside as `Balbino Research Proposal .md`).
 
-**Approval gate (verbatim):** "The final research topic shall be approved by the Supervisor before the main experiments begin." — **[ ] still open as of 2026-08-24.** Proposal is written and submitted for review, but no confirmation of Supervisor sign-off has been recorded here yet. Do not treat Week 5's main experiments (the actual DPO training runs) as cleared to start until this is explicitly confirmed — repo/pipeline setup work is fine in the meantime, training runs are not.
+**Approval gate (verbatim):** "The final research topic shall be approved by the Supervisor before the main experiments begin." — **[x] cleared 2026-08-25.** Proposal presented at this week's supervision meeting; approved with minor formatting requests only (no changes to scope, hypotheses, or protocol) — not blocking. See `00_Admin_&_Roadmap/Week5_Checklist.md` for the resulting schedule.
 
 ## 🔒 What Week 3 already tells us, going into topic selection
 - **LoRA is the practical default** for any experiment in this project: better result than full fine-tuning (13.795 vs. 14.61 perplexity) *and* the smaller footprint — no reason to default to full fine-tuning for the actual research topic's experiments.
