@@ -12,6 +12,9 @@ kaggle.json
 # Obsidian local config
 .obsidian/
 
+# Local-only notes (drafts not meant to go to GitHub, even private)
+*.local.md
+
 # Experiment tracking
 wandb/
 
