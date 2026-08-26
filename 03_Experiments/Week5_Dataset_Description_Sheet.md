@@ -64,14 +64,15 @@ Contract deliverable (Annex A, Week 5 — verbatim): "a dataset description shee
 ## 3. HealthBench-Africa Extension
 
 - **Role in this project:** D3 (Over-Refusal Rate / utility evaluation, benign health queries).
-- **Source:** Tonative-Research, extension of OpenAI's HealthBench.
+- **Source:** Tonative-Research, extension of OpenAI's HealthBench (~5,000 clinically-grounded prompts, expert-defined rubrics).
 - **Link:** https://huggingface.co/datasets/tonative/healthbench-africa-extension
-- **Schema:** `prompt_id, translated_prompt, rubrics, example_tags, translation_language, translated_at`
-- **License:** "Follows the licensing terms of the original dataset" (OpenAI HealthBench) — not fully specified on the dataset card.
-- **Size:** ~2,000 rows.
+- **⚠️ Size correction:** only **500 examples** in the (single) `train` split — a subset sampled from the 5,000-prompt original, not the ~2,000 noted earlier (that number came from an imprecise summary, not a direct check). Dataset size: 42,371,072 bytes (~40.4 MB). No separate validation/test split exists; the whole 500-example set would be used purely for our own Over-Refusal evaluation, not for training.
+- **⚠️ Translations are machine-generated, not native/expert:** the data itself carries `translation_model: "gpt-4o-mini"` and `translation_provider: "openai"` fields on every row — confirms this is LLM-translated content, same pattern as UbuntuGuard (D2/D4). A third dataset now confirmed machine-translated rather than natively authored; reinforces that finding genuinely native-translated data is a systemic gap across these candidate sources, not a one-off.
+- **Human validation:** the dataset card describes a "dual evaluation framework" (LLM-as-judge + human evaluation by medically-trained, target-language-fluent professionals), but its own Methodology section calls this "optional," and Limitations states "human evaluation may not yet cover all samples" — partial/inconsistent coverage, not guaranteed for every row.
+- **Schema (actual data preview, richer than and partly inconsistent with the README's own "Features" list):** `prompt_id, english_prompt, translated_prompt, prompt (list, chat-formatted with role/content/translated_content), rubrics, example_tags, ideal_completions_data (dict: ideal_completion, ideal_completions_group, ideal_completions_ref_completions, translated_ideal_completion, translated_ref_completions), canary, translation_info (dict: lang/model/provider/translated_at — duplicates the top-level translation_language/translation_model/translation_provider/translated_at fields), language`. The README's "Features" section lists a simpler `ideal_responses (list)` field that doesn't match the `ideal_completions_data` dict actually observed — another dataset-card/real-data mismatch, similar to AfriHate's `tweet`/`text` one; trust the observed preview over the prose description.
+- **License:** still not explicitly stated anywhere on the card — "follows the licensing terms of the original dataset" (OpenAI HealthBench) is the closest statement, not a formal declaration. Still open.
 - **Languages:** Igbo, Yoruba, Nigerian Pidgin, Kikuyu. **⚠️ Does not cover Hausa or Swahili** — two of the proposal's stated target languages (section 13, "Restricted Linguistic Scope" lists Hausa, Yoruba, Swahili, Nigerian Pidgin). Over-refusal checks may need to be restricted to Igbo/Yoruba/Pidgin/Kikuyu, or a complementary source found for Hausa/Swahili.
-- **Status:** marked "experimental" / "under active development" on the dataset card — translations may still change.
-- **Technical description (pending):** _awaiting details_
+- **Status:** explicitly "an ongoing research effort" per its own README — "translations and evaluations may be further refined over time."
 
 ---
 
@@ -105,5 +106,6 @@ Contract deliverable (Annex A, Week 5 — verbatim): "a dataset description shee
 - [x] Confirm AfriHate's license — `apache-2.0`, confirmed directly against the HF dataset card
 - [ ] Check AfriHate's exact per-language split sizes via the `datasets` library (not stated on the card)
 - [ ] Resolve the Hausa/Swahili gap in HealthBench-Africa's language coverage for the Over-Refusal evaluation
+- [ ] Confirm HealthBench-Africa's license directly (still only an indirect "follows the original" statement)
 - [ ] Confirm IrokoBench's exact language list against the languages actually used in this project
 - [ ] Decide how to stage/centralize these datasets on Kaggle (next step, once the technical descriptions below are in)
