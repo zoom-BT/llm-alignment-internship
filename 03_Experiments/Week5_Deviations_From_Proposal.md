@@ -4,6 +4,8 @@ The approved proposal (`04_Weekly_Reports/Week_04_Research_Proposal.md`, approve
 
 **Decision (2026-08-26, final for now):** proceed as a proof-of-concept scoped to the released UbuntuGuard test data (401/100 split, D1) rather than wait on the authors. Results from this phase should be framed explicitly as a POC — validating the pipeline and the H1/H2/H3 comparisons work end-to-end — not as the full-scale study the proposal's original numbers (train_size up to 1000, A1 ablation) assumed. Searching in parallel for a complementary dataset that can properly fill the native-translation gap (D2/D4) — see the search prompt below.
 
+**Update (2026-08-26):** that search is now **secondary, not blocking** — see **D6**. The primary claim has been recentred from H1 to H2, which does not depend on a native-vs-translated contrast at all. A genuinely native source would still strengthen an optional H1 robustness axis, so the search prompt is kept, but no longer gates Week 6's training runs.
+
 ---
 
 ## D1. UbuntuGuard has no training split (proposal section 7, D1)
@@ -12,9 +14,27 @@ The approved proposal (`04_Weekly_Reports/Week_04_Research_Proposal.md`, approve
 
 **Actual:** confirmed via the repo's full git history (5 commits, `github.com/hemhemoh/UbuntuGuard`) that no training file has ever been committed — only three test-split JSONL files exist, added in the latest commit (2026-04-15). The paper (arXiv:2601.12696v3) reports train/test split sizes in its Table 3, but its only availability language ("Our benchmark and code can be found online," abstract + footnote 1) never explicitly commits to releasing the training split specifically — checked the abstract, introduction, ethics, limitations, acknowledgments, and appendix, none clarify this. Not a broken promise, just genuinely ambiguous — hence asking directly rather than assuming either way.
 
-**Resolution:** self-carved a per-language stratified 80/20 split of the 501 clean PASS/FAIL pairs in the released test data (401 train / 100 eval, no `row_id` overlap between sides) — see `Week5_Dataset_Description_Sheet.md` for the full table. `config.yaml`'s `dpo.train_size` corrected from the proposal's 1000 to 401 accordingly.
+**Resolution:** self-carved a language-stratified 80/20 split of the pairs recoverable from the released test data, split at `row_id` level so no prompt appears on both sides. Implemented and tested in the code repo (`src/data.py`, 20 tests).
 
-**Consequence for the proposal's A1 ablation (section 11):** the 250/500/1000-example sweep is no longer reachable as written — 401 is the ceiling with this data. Not changing the proposal text; flagging it here so it's addressed explicitly when results are written up, or if a training split arrives from the authors before Week 6.
+**Correction (2026-08-26): the usable pool is 1,089 pairs, not 501.** The earlier figure counted only `row_id`s holding *exactly* one PASS and one FAIL. In fact 349 of the 851 `row_id`s hold several responses per label (271 hold two PASS and two FAIL). Matching them up within each `row_id`, without ever reusing a response, more than doubles the yield:
+
+| | Recorded earlier | Actual |
+| :---- | ---: | ---: |
+| Usable preference pairs | 501 | **1,089** |
+| Train / eval | 401 / 100 | **868 / 221** |
+
+Verified contamination-free on the real data: zero `row_id` overlap between splits, and zero identical prompts across splits (the stricter check — two pairs from one `row_id` share a prompt verbatim, so splitting at pair level would have leaked it).
+
+Per-language split (train / eval): Swahili 160/47, Ewe 133/32, Zulu 119/33, Akan 119/30, Hausa 104/24, Xhosa 99/24, Yoruba 56/12, Igbo 35/9, Luganda 29/5, Nyanja 14/5.
+
+**Consequence for the proposal's A1 ablation (section 11):** largely restored. At 401 the 250/500/1000 sweep was unreachable; at 868 it runs as 100/200/868 — same shape, and D6 makes A1 the more relevant of the two planned ablations. `config.yaml`'s `train_size` is 868, still short of the proposal's 1000 but no longer a different order of magnitude.
+
+**Two data-shape findings from implementing this, both recorded because they change the design rather than just the code:**
+
+1. **PASS and FAIL diverge at the *first* assistant response, not the last** (839 of 843 dialogues). The pairs are therefore cut at the first divergent turn, discarding the rest of the dialogue. This is the right cut rather than a loss: the later turns of a FAIL transcript are conditioned on an already-unsafe answer, so keeping them would blur "produced an unsafe answer" together with "kept going down that path". It does mean the DPO training signal is effectively single-turn, despite UbuntuGuard being a multi-turn benchmark — worth stating in the write-up. Three pairs diverge on a *user* turn (i.e. answer different questions) and are dropped.
+2. **`max_seq_length` was wrong at 1024.** Measured with the actual AfriqueQwen tokenizer, formatted pairs run to a median of 819 tokens and a maximum of 1,570 — 1024 would have silently truncated 13.8% of examples. Truncating a DPO response removes the very signal being trained on, so this would have produced plausible-looking but meaningless runs. Raised to 2048 (zero truncation). The safety policy in the system message is the bulk of it (~2,700 chars median, against ~245 for the user turn).
+
+**Incidental measurement, relevant to H2:** AfriqueQwen's tokenizer has a 248,044-token vocabulary against roughly 151,000 for stock Qwen, and encodes this African-language corpus at about 4.1 characters per token — far better than the 2.5 a standard multilingual tokenizer would be expected to manage on these scripts. The CPT backbone's vocabulary extension is measurably doing its job, before any training has been run. Cheap to report and directly supportive of H2's premise.
 
 ## D2. `crosslingual`/`translated` are not the same axis as Native-DPO/Translated-DPO (proposal section 7, D1)
 
@@ -22,7 +42,7 @@ The approved proposal (`04_Weekly_Reports/Week_04_Research_Proposal.md`, approve
 
 **Actual:** UbuntuGuard's `crosslingual` and `translated` test files are the paper's own **Cross-lingual (LRL-EN)** and **Full Localization (LRL-LRL)** evaluation conditions — dialogue is in the local language in both; the only difference is whether the *safety policy* itself is left in English or also localized. This is a policy-language axis, not a translation-quality axis, and neither file was constructed as a machine-translated counterfactual of the other.
 
-**Resolution (pending):** either (a) keep the proposal's original plan — take UbuntuGuard's English-source content and produce our own NLLB-translated counterfactual specifically for H1, using `crosslingual`/`translated` only for supplementary Refusal Rate evaluation, not as the H1 comparison itself; or (b) reframe H1's operationalization around the policy-language axis UbuntuGuard actually provides. Not decided yet — needs a decision before Week 6's DPO training runs, since it changes what H1 actually measures.
+**Resolution:** superseded by **D6** below. Neither option originally considered here — (a) build our own NLLB counterfactual, or (b) reframe H1 around UbuntuGuard's policy-language axis — is worth the cost, because a literature check showed the underlying question is already answered. H1 is demoted rather than re-operationalized. See D6.
 
 ## D3. License clarified, but from the paper, not the repo
 
@@ -53,6 +73,54 @@ The approved proposal (`04_Weekly_Reports/Week_04_Research_Proposal.md`, approve
 **Actual:** per the paper's own methodology, PASS/FAIL dialogues were generated entirely by Llama-3.1-405B/Qwen3-235B and passed through *automated structural checks only* — no human ever verified that a "FAIL" dialogue genuinely violates its policy, or that a "PASS" dialogue genuinely complies. Separately, translation quality was calibrated by a single native speaker per language on just 20 sampled pairs (80 total, 4 of 10 languages: Swahili, Igbo, Yoruba, Hausa) — the paper states this explicitly as a limitation ("relies on a single human validator for a subset of four languages due to the scarcity of available expert native speakers"), and the resulting 70% threshold was then applied automatically, with zero human validation, to the remaining six languages (Zulu, Xhosa, Ewe, Akan, Luganda, Nyanja).
 
 **Consequence:** the DPO training signal itself (not just the language of the text) carries unverified label quality — a real risk to flag in our own risk/limitations section (proposal section 13) when results are written up, and a natural fourth question for the author email (added).
+
+## D6. Primary claim recentred: H2 becomes the headline, H1 is demoted
+
+**Planned:** H1 (native vs. translated alignment data) is the paper's headline claim — it is the proposal's title, its research question (section 3), and contribution C2. H2 (does the African-CPT backbone retain safety alignment better?) is a supporting hypothesis validated via baseline B3.
+
+**Actual:** a literature check on H1's underlying question — *does the translation quality of safety alignment data affect safety transfer?* — found it already answered, in a recent systematic review that also names our actual gap.
+
+> Lemofouet, V. D., Uzor, B. N., Anyanwu, P. C., Kapsa, D. B., Imam, S. H., Sahil, P. S., Oppong, A., Abdullahi, T., Siro, C., Abdulmumin, I., Yimam, S. M., & Muhammad, S. H. (2026). *LLM Safety Alignment in Low-Resource Languages: A Systematic Literature Review.* arXiv:2608.14626v1 [cs.CL]. Accepted at the LM4UC workshop, IJCAI 2026.
+
+PRISMA 2020 methodology, ~1,500 papers screened to 50 included studies. Note that **Tassallah Abdullahi, UbuntuGuard's corresponding author, is a co-author** of this review — the same group defining the field's gaps also produced our primary dataset.
+
+What the review establishes as settled, against H1:
+
+- **LionGuard (Tan 2025):** "naively translated training data reduces performance."
+- **Paul 2025:** 40,000 quality-filtered samples match or exceed 200,000 unfiltered ones for alignment.
+- **Ge 2025:** proposes "toxicity-preserving translation," i.e. already starts from the premise that standard MT damages harmful intent.
+- **CultureGuard:** natively grounded, culturally specific safety data outperforms translated-from-English data on non-English benchmarks.
+
+The review's own summary: translation quality matters significantly, but intelligent filtering and preservation strategies mitigate the degradation. That is precisely the conclusion a reframed H1 would reach.
+
+**A second finding closed the fallback option.** The idea of rescuing H1 by arguing that *preference pairs* (DPO) degrade differently under translation than *SFT targets* do — because MT may flatten the chosen/rejected contrast — does not hold as a novelty claim either. Multilingual safety DPO is an active area: MPO (Zhao 2025) minimises the safe/unsafe reward gap across languages without per-language pairs; Paul 2025 applies DPO after SFT on filtered Hindi data; Lim 2025 compares SFT, DPO and KTO for Singlish. The mechanism is not unexplored.
+
+**What the review does *not* cover, verbatim:**
+
+> *Continued pre-training:* not mentioned as a primary method. The review focuses on fine-tuning, mechanistic alignment, and data adaptation but does not discuss CPT backbones.
+
+And among its explicit future directions:
+
+> Validation of "parameter-efficient fine-tuning, data synthesis, and cross-lingual transfer" specifically "in the context of African languages."
+
+That is `B3 (Qwen3.5-4B-Base + DPO)` vs `B4 (AfriqueQwen3.5-4B-50Langs + DPO)`, under QLoRA, on African languages — H2 exactly, named as an open gap by an independent systematic review rather than by our own judgment.
+
+**Resolution:**
+
+| | Proposal as approved | Recentred |
+| :---- | :---- | :---- |
+| Headline claim | H1 — native vs. translated | **H2 — does the CPT backbone retain alignment better?** |
+| Control | H3 — utility / over-refusal | H3, unchanged |
+| H1 | title and research question | secondary robustness axis, or dropped |
+
+Concretely: one DPO dataset (UbuntuGuard's self-carved 401/100, D1), vary the backbone, report ΔRR and ΔORR. The pipeline is unchanged; the framing and the title change.
+
+**Consequences:**
+
+1. **The paper's title no longer matches its claim.** This must be raised with the Supervisor at the next supervision meeting — it is a larger deviation than D1-D5, which were data-level findings; this one touches the approved research question (section 3) and contribution C2.
+2. **Simplifies the work, and removes a dependency we could not satisfy.** No NLLB translation arm and no hand-built TukaBench preference pairs are needed for the headline result. The recentring drops the reliance on a genuinely native data source — which D2/D4 established does not exist among our candidates — and rests on what we actually have: two backbones, one clean DPO set, and ~1,900 held-out African-language evaluation prompts.
+3. **A1 (section 11) becomes more useful than A2.** The data-volume sweep (rescaled to 100/200/401 per D1) speaks directly to the recentred claim — how much preference data does each backbone need? A2 (linguistic diversity) is now secondary.
+4. **The review is also our related-work anchor.** It cites UbuntuGuard as the "first African policy-based safety benchmark," so it situates both our gap and our dataset in one citation. Its acceptance at LM4UC (IJCAI) is also a concrete venue precedent for this line of work.
 
 ## Search prompt for finding a complementary dataset (for Google Deep Search / similar)
 

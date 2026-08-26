@@ -21,27 +21,31 @@ Contract deliverable (Annex A, Week 5 — verbatim): "a dataset description shee
   - Label balance: ~52% PASS / 48% FAIL, consistent across all three files.
   - Languages (crosslingual/translated): Swahili (435), Ewe (345), Zulu (318), Akan (313), Hausa (278), Xhosa (263), Yoruba (144), Igbo (98), Luganda (74), Nyanja (39).
   - Countries: Ghana (658), South Africa (581), Nigeria (520), Kenya (435), Uganda (74), Malawi (39).
-  - 2,307 lines collapse to **851 unique `row_id`s** (each `row_id` = one underlying prompt, evaluated against 1-4 conditions/models): 501 have exactly one PASS + one FAIL entry (directly usable as a DPO chosen/rejected pair), 271 have 4 entries, 71 have 3, 8 are unpaired (single entry, unusable for DPO as-is).
+  - 2,307 lines collapse to **851 unique `row_id`s** (each `row_id` = one underlying prompt, evaluated against 1-4 conditions/models): 501 have exactly one PASS + one FAIL entry, 271 have 4 entries (two PASS, two FAIL), 71 have 3, 8 are unpaired (single entry, unusable for DPO). The multi-entry ones are usable too — see the split below — provided no single response is matched into two different pairs.
   - **`crosslingual` vs `translated`, per the paper's own terminology (arXiv:2601.12696v3):** these are the paper's **Cross-lingual (LRL-EN)** and **Full Localization (LRL-LRL)** evaluation conditions — dialogue is in the local language in both; the only difference is whether the *policy* stays in English (Cross-lingual) or is also localized (Full Localization). A third condition, **English Baseline (EN-EN)**, corresponds to `Ubuntu_guard_test_all_english_only.jsonl`. **This is not the same axis as the proposal's Native-DPO vs. Translated-DPO** (expert-translated vs. NLLB-machine-translated *training data*) — it's about which language the *safety policy* is written in, not about translation quality of a shared source. Repurposing it as a proxy for H1 is a documented deviation from the proposal, not what the benchmark was built to measure — see `Week5_Deviations_From_Proposal.md`.
 - **Decision (2026-08-26):** proceed with the released test data rather than wait — carve our own train/eval split out of it, since no training split has ever been committed to the repo (confirmed via full git history, not just current file listing; see below). The paper's own Table 3 reports train/test split sizes per language, and its data statement says "Our benchmark and code can be found online" (pointing at the GitHub repo) — but no train file is actually there, and the paper doesn't say whether guardian models were trained on it or when/whether the train split will be released. Emailing the corresponding author (Tassallah Abdullahi, tassallahabdullahi@brown.edu) to ask directly — draft in `Week5_Deviations_From_Proposal.md`.
 - **Git history check (rules out "just a stale README"):** every file ever added, across all 5 commits: `.gitignore`, `README.md` (initial commit) -> `translate_gmt.py` -> `evaluate.py` + the 3 test JSONL files (`Add code and data for model evaluation`, 2026-04-15). The "Data and Code Coming Soon......." line is indeed stale *for the evaluation side* (that commit added real eval code/data without removing the placeholder line) — but no training file has ever existed in this repo at any point, so the training-split gap itself is real, not a documentation lag.
-- **Our own train/eval split (row_id-level, to avoid contamination):** using the 501 `row_id`s that have exactly one PASS + one FAIL entry (unambiguous chosen/rejected pairs), split 80/20 **per language** (proportional, not global, so low-count languages like Nyanja aren't wiped out of one side):
+- **Our own train/eval split (row_id-level, to avoid contamination).** Superseded the earlier plan of using only the 501 unambiguous `row_id`s: the 349 `row_id`s holding several responses per label yield valid extra pairs too, provided no response is ever matched twice. Pairing greedily within each `row_id` gives **1,089 usable pairs, not 501** — the earlier figure discarded roughly half the corpus. Split 80/20 **per language** (proportional, not global, so low-count languages like Nyanja aren't wiped out of one side):
 
   | Language | Total pairs | Train | Eval |
   | :---- | ---: | ---: | ---: |
-  | Ewe | 99 | 79 | 20 |
-  | Akan | 89 | 71 | 18 |
-  | Swahili | 76 | 61 | 15 |
-  | Zulu | 59 | 47 | 12 |
-  | Xhosa | 55 | 44 | 11 |
-  | Hausa | 52 | 42 | 10 |
-  | Yoruba | 29 | 23 | 6 |
-  | Igbo | 21 | 17 | 4 |
-  | Luganda | 15 | 12 | 3 |
-  | Nyanja | 6 | 5 | 1 |
-  | **Total** | **501** | **401** | **100** |
+  | Swahili | 207 | 160 | 47 |
+  | Ewe | 165 | 133 | 32 |
+  | Zulu | 152 | 119 | 33 |
+  | Akan | 149 | 119 | 30 |
+  | Hausa | 128 | 104 | 24 |
+  | Xhosa | 123 | 99 | 24 |
+  | Yoruba | 68 | 56 | 12 |
+  | Igbo | 44 | 35 | 9 |
+  | Luganda | 34 | 29 | 5 |
+  | Nyanja | 19 | 14 | 5 |
+  | **Total** | **1,089** | **868** | **221** |
 
-  A `row_id` assigned to train never appears in eval (and vice versa) — this is what "investigate duplication and contamination" resolves to for this dataset. The 271 four-entry and 71 three-entry `row_id`s (multiple PASS/FAIL variants per prompt) are held out of this initial split; revisit as a way to grow the training pool if 401 pairs proves too small once DPO training actually runs.
+  Implemented and tested in the code repo (`src/data.py`, 20 tests), not done by hand. A `row_id` assigned to train never appears in eval — this is what "investigate duplication and contamination" resolves to for this dataset, and it is enforced in code rather than assumed. Verified on the real data: zero `row_id` overlap **and** zero identical prompts across the two splits. The second check is the one that matters here: two pairs carved from the same `row_id` share a prompt verbatim, so splitting at pair level instead of `row_id` level would have leaked training prompts straight into evaluation.
+
+  **Pair construction:** PASS and FAIL transcripts diverge at the *first* assistant response in 839 of 843 dialogues, so pairs are cut there — prompt = safety policy (system) + opening user turn, chosen = the compliant response, rejected = the violating one. The rest of each dialogue is discarded, because a FAIL transcript's later turns are conditioned on an already-unsafe answer. Three pairs diverge on a user turn (different questions on each side) and are dropped.
+
+  **Two parsing traps in this data**, both worth knowing before anyone re-reads these files: turns are marked `User:` / `Agent:` (not `Assistant:`), with `Agent:` usually indented rather than at column 0; and `metadata` is a *Python* dict repr with single quotes, so `json.loads` raises on it — needs `ast.literal_eval`.
   - `crosslingual`'s train/eval split doubles as `translated`'s, since both files share the same `row_id`s — keeps Native-DPO (crosslingual) and Translated-DPO (translated) using the *same* underlying prompts on each side, matching the confound-isolation design from 2026-08-24.
 - **Technical description (pending):** _awaiting further details_
 
@@ -129,7 +133,7 @@ Contract deliverable (Annex A, Week 5 — verbatim): "a dataset description shee
 ---
 
 ## Open items before this sheet is complete
-- [x] **Decide how to handle UbuntuGuard's missing training split** — resolved 2026-08-26: proceed with a self-carved, per-language 80/20 row_id split of the released test data (401 train / 100 eval pairs), documented above. Email to the author pending in parallel, not blocking.
+- [x] **Decide how to handle UbuntuGuard's missing training split** — resolved 2026-08-26: proceed with a self-carved, per-language 80/20 row_id split of the released test data (**868 train / 221 eval** pairs), implemented and tested in `src/data.py`, documented above. Email to the author pending in parallel, not blocking.
 - [x] Confirm UbuntuGuard's actual license — paper states CC BY 4.0 (arXiv:2601.12696v3); repo just lacks a LICENSE file. Email to the author also asks for confirmation/a repo update.
 - [x] Read UbuntuGuard's methodology section — `crosslingual`/`translated` are the paper's Cross-lingual (LRL-EN) and Full Localization (LRL-LRL) conditions, a policy-language axis, not a translation-quality axis. Repurposing them for H1 is a documented deviation, not a natural fit — see `Week5_Deviations_From_Proposal.md`.
 - [x] Confirm AfriHate's license — `apache-2.0`, confirmed directly against the HF dataset card
