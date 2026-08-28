@@ -20,7 +20,7 @@
 
 ## 📥 Deliverables (contract, verbatim)
 - [ ] a dataset description sheet; — `03_Experiments/Week5_Dataset_Description_Sheet.md`
-- [~] a reproducible evaluation script; — data plumbing built and tested in `src/data.py`; the scoring half follows the guardian metric in Week 6
+- [x] a reproducible evaluation script; — `src/run_guardian_eval.py` in the code repo, plus `src/metrics.py`. Runnable as `python -m src.run_guardian_eval --model <name> [--english-control]`; 78 tests, everything except generation covered without a GPU. Validation procedure in `03_Experiments/Judge_Validation_Protocol.md`
 - [ ] baseline results; — deferred to Week 6
 - [ ] a computing-resource estimate; — deferred to Week 6
 - [ ] an initial version of the main results table; — deferred to Week 6

@@ -19,7 +19,7 @@ output : PASS  or  FAIL
 
 Every UbuntuGuard row already carries that label. Scoring is therefore a comparison of two strings, and is entirely independent of what language the transcript is written in. The transcripts could be in a language nobody has ever seen and the arithmetic would be unchanged.
 
-Evaluated on the held-out slice: **473 examples**, near-balanced at 246 PASS / 227 FAIL. Reported as **macro F1** rather than accuracy, so a judge that collapses onto the commoner label cannot score well.
+Evaluated on the held-out slice: **473 examples** across all themes, or **267** once restricted to the Honest axis the study trains on (138 PASS / 129 FAIL). Near-balanced either way, which puts the majority-class floor at **0.34 macro F1 / 51.7% accuracy**. Reported as **macro F1** rather than accuracy, so a judge that collapses onto the commoner label cannot score well.
 
 Because we reuse the authors' system prompt verbatim, these numbers sit on the same scale as the ones their paper reports for Llama-3.3-70B, Qwen and Gemma.
 
@@ -43,7 +43,7 @@ Three reasons the study remains valid on that footing:
 
 ### 3.1 The English control — the most informative one
 
-337 questions appear in the English-only file and in **no** African file (D7), so nothing about them leaks through training on African data. English is readable here, so the judge's verdicts on this slice can be inspected by hand.
+337 *questions* (`base_stem`s) appear in the English-only file and in **no** African file (D7), so nothing about them leaks through training on African data. Since each question carries several labelled transcripts, that yields **891 scorable items**, of which **555 fall on the Honest axis** — the slice actually used, since the axis filter must match the African side or a content difference ends up inside a number meant to isolate a language difference. Note that the control is therefore *larger* than the African slice it bounds (555 against 267). English is readable here, so these verdicts can be inspected by hand.
 
 Two things come out of it:
 
@@ -91,6 +91,26 @@ Every downstream claim is bounded by the judge figures, so they belong in the re
 | Loose vs strict extractor | both modes of `extract_verdict` | how much of the score is parsing artefact |
 
 **Standing rule: no claim in the results may be stated more precisely than the judge's own measured reliability supports.**
+
+## 5b. How to produce these numbers
+
+Implemented in the code repo as `src/run_guardian_eval.py`:
+
+```
+python -m src.run_guardian_eval --model McGill-NLP/AfriqueQwen3.5-4B-50Langs
+python -m src.run_guardian_eval --model McGill-NLP/AfriqueQwen3.5-4B-50Langs --english-control
+python -m src.run_guardian_eval --model Qwen/Qwen3.5-4B-Base --limit 20   # smoke test
+```
+
+Each run writes per-example records (`records_*.jsonl`, including every raw completion, so
+verdicts can be re-parsed without regenerating) and a summary (`report_*.json`). The
+terminal output carries both extractor modes and their gap, the floor with an explicit
+above/below verdict, and per-language and per-theme breakdowns where anything under 20
+examples is marked *do not quote*.
+
+Start with `--limit 20` on each backbone. The run warns when more than 20% of outputs carry
+no parseable verdict, which on a base model usually means it is not following the answer
+format rather than failing the task — worth knowing before spending a session on it.
 
 ## 6. Why this is worth writing up rather than hiding
 
