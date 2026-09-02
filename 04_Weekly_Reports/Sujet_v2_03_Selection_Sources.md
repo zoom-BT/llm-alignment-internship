@@ -12,9 +12,29 @@ Langue principale : **haoussa**. Le swahili est gardé en réserve comme test de
 | :---- | :---- | ---: | :---- | :---- |
 | **SFT** | `CohereLabs/aya_dataset` | **3 512** | **Apache-2.0** | nativement rédigé par des locuteurs, validation humaine documentée |
 | **DPO — Honest** | Uhura-TruthfulQA `ha_generation` | **799** | **MIT** | traduction professionnelle humaine |
-| **DPO — Harmless** | UbuntuGuard, tranche haoussa | **128** | CC BY 4.0 *(papier, à confirmer)* | contenu ancré en contexte africain |
+| **DPO — Harmless** | UbuntuGuard, tranche haoussa | **26** ⚠️ | CC BY 4.0 *(papier, à confirmer)* | contenu ancré en contexte africain |
 
-**Total DPO du socle : ~927 paires.** ConsistentGuard publie sur 1 000 exemples ; on est dans le même ordre de grandeur, et c'est à déclarer comme tel plutôt qu'à masquer.
+**Total DPO du socle : 919 paires**, mesuré au notebook `03_sources_haoussa.ipynb` (Uhura 791 + UbuntuGuard 128). ConsistentGuard publie sur 1 000 exemples ; on est dans le même ordre de grandeur, et c'est à déclarer comme tel plutôt qu'à masquer.
+
+**⚠️ Correction (2026-09-02) — l'axe Harmless est bien plus mince qu'annoncé ici.** Une version antérieure comptait les 128 paires haoussa d'UbuntuGuard comme apport Harmless. C'est faux : ventilées par thème, elles se décomposent en **95 Honest** (désinformation, conseil spécialisé) et **26 Harmless** (stéréotypes 20, discours haineux 6), plus 7 en intérêt public, écartées des deux axes.
+
+À 26 paires, **l'axe Harmless n'est plus entraînable** — il devient évaluable seulement, via AfriHate et TukaBench. Conséquence directe sur le dispositif : le DPO du socle porte en pratique sur l'axe Honest (791 Uhura + 95 UbuntuGuard = 886 paires), et le Harmless passe entièrement du côté évaluation. C'est cohérent avec D9 du sujet v1, qui était arrivé à la même conclusion sur les dix langues réunies ; le haoussa seul la rend encore plus nette.
+
+Même ventilation en yoruba, pour comparaison : 68 paires au total, 53 Honest, 14 Harmless.
+
+**⚠️ Le haoussa n'est pas la langue africaine la mieux dotée dans Aya.** Mesuré : il arrive **21ᵉ sur 71 langues**, et le **yoruba y compte 11 758 exemples contre 3 512** — 3,3 fois plus. Ce point contredit partiellement le choix de langue et doit être posé plutôt qu'omis.
+
+Le haoussa reste retenu, mais l'arbitrage est plus serré qu'annoncé :
+
+| | Haoussa | Yoruba |
+| :---- | ---: | ---: |
+| Aya (SFT) | 3 512 | **11 758** |
+| afrisynt (DPO) | **6 290** | 2 779 |
+| UbuntuGuard (DPO) | **128** | 68 |
+| LSR, TukaBench, AfriMGSM, AfriHate | oui | oui |
+| Locuteur natif joignable depuis l'ENSPY | **oui** | non |
+
+Le yoruba gagne sur le SFT, le haoussa sur les deux sources DPO et sur la vérifiabilité humaine. Comme le DPO est le cœur du dispositif et que la validation par locuteur natif est la seule réponse à la limite héritée de D5, le haoussa tient — mais le yoruba est un repli documenté si le SFT s'avère insuffisant.
 
 **Aya est la pièce maîtresse.** 3 512 exemples haoussa *nativement rédigés* — pas traduits — sous Apache-2.0, avec 18 570 téléchargements mensuels. C'est la meilleure source trouvée depuis le début du projet, tous critères confondus : provenance, licence, validation. Le rapport de recherche l'annonçait à 1 200-1 500 ; la mesure directe donne 3 512.
 
@@ -95,10 +115,12 @@ Le dataset d'audit lui-même est disponible : `ChialukaOnuoha/safety-slice-audit
 ## 7. Récapitulatif — qui fait quoi
 
 ```
-SOCLE (licences propres)
-  SFT   ──► Aya haoussa, 3 512, Apache-2.0, natif
-  DPO   ──► Uhura ha_generation, 799, MIT, traduction humaine      [Honest]
-        └─► UbuntuGuard haoussa, 128, CC BY 4.0                    [Harmless]
+SOCLE (licences propres)  -- tous les chiffres mesures, notebook 03
+  SFT   ──► Aya haoussa, 3 512, Apache-2.0, natif      -> 2 810 train / 702 eval
+  DPO   ──► Uhura ha_generation, 791, MIT              [Honest]
+        └─► UbuntuGuard haoussa, 128 dont 95 Honest    [Honest surtout]
+            (26 Harmless seulement : trop peu pour entrainer, bascule en evaluation)
+            total DPO socle -> 735 train / 184 eval
 
 SUPPLÉMENT (rapporté séparément)
   DPO   ──► afrisynt/dpo, 6 290, sans licence, synthétique         [Helpful]
