@@ -1,23 +1,26 @@
 # Plan de runs — sujet v2
 
 **Budget réel :** 3 semaines × 30 h de quota Kaggle hebdomadaire = **90 h**, sessions plafonnées à **9 h**.
-**Coût estimé :** 47 h au pire scénario, 24 h au médian, pour deux bras entraînés sur trois graines.
+**Coût mesuré** (2026-09-03, run `04-filtre3-faisabilite`, statut `COMPLETE`) : **9,76 h par bras** — SFT 5,55 h à 56,8 s/pas, DPO 4,21 h à 109,8 s/pas. Deux bras sur trois graines : **58,6 h sur 90**, marge ~30 h. Détail dans `03_Experiments/Estimation_Compute.md`.
 
-La marge est confortable. La contrainte qui structure le plan n'est donc pas le quota total mais **le plafond de 9 h par session** : un bras entier passe, mais il faut soumettre un bras par run plutôt que d'enchaîner les six.
+**⚠️ Un bras ne tient PAS dans une session.** 9,76 h contre un plafond de 9 h. C'est la contrainte qui structure le plan, et elle impose de découper : SFT et DPO en deux soumissions séparées, le second reprenant l'adaptateur produit par le premier.
 
 ---
 
 ## 1. Les runs à produire
 
-| # | Run | Entraînement | Coût estimé | Dépend de |
+Chaque bras se découpe en **deux soumissions**, puisqu'il dépasse le plafond de session.
+
+| # | Run | Contenu | Coût mesuré | Dépend de |
 | :---- | :---- | :---- | ---: | :---- |
-| R0 | **A0 + A1**, évaluation seule | non | ~0,5 h | rien |
-| R1 | **A2** (Qwen-Base), graine 42 | SFT + DPO | 4-6 h | R0 pour la métrique |
-| R2 | **A3** (AfriqueQwen), graine 42 | SFT + DPO | 4-6 h | — |
-| R3 | A2, graine 43 | SFT + DPO | 4-6 h | R1 réussi |
-| R4 | A3, graine 43 | SFT + DPO | 4-6 h | R2 réussi |
-| R5 | A2, graine 44 | SFT + DPO | 4-6 h | — |
-| R6 | A3, graine 44 | SFT + DPO | 4-6 h | — |
+| R0 | **A0 + A1**, évaluation seule | aucun entraînement | ~0,5 h | rien |
+| R1a | **A2** (Qwen-Base), graine 42 | SFT | 5,55 h | R0 pour la métrique |
+| R1b | A2, graine 42 | DPO depuis l'adaptateur R1a | 4,21 h | R1a |
+| R2a | **A3** (AfriqueQwen), graine 42 | SFT | 5,55 h | — |
+| R2b | A3, graine 42 | DPO depuis l'adaptateur R2a | 4,21 h | R2a |
+| R3a/b … R6a/b | graines 43 et 44 | idem | 9,76 h par bras | la graine précédente réussie |
+
+**Point technique à régler avant R1a :** le DPO doit repartir de l'adaptateur LoRA produit par le SFT, non du modèle de base. `run_dpo` accepte déjà un `model_path` ; il faut lui passer le checkpoint SFT et vérifier que PEFT recharge correctement l'adaptateur.
 
 **R0 en premier, et sans discussion.** Il ne coûte presque rien, ne dépend d'aucune décision encore ouverte, et produit la première ligne du tableau de résultats. Si la chaîne d'évaluation a un défaut, il vaut mieux le découvrir sur un run d'une demi-heure que sur un run de six.
 
