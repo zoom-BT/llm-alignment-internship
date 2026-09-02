@@ -118,14 +118,30 @@ Contract deliverable (Annex A, Week 5 — verbatim): "a dataset description shee
 - **⚠️ "translate-test" variants are NOT a native-vs-machine-translation counterfactual pair (corrects an initial hope):** each task also has a `-translate-test` dataset (e.g. `masakhane/afrimgsm-translate-test`), but per its own card this is "translations of the GSM8k dataset from 16 African languages and 1 high resource language **into English** using NLLB" — i.e. the African-language test set machine-translated *back into English*, for the standard NLP "translate-test" evaluation paradigm (comparing a multilingual model on native text vs. an English-only model on machine-translated-to-English text). Not the same content translated two ways into the target language — doesn't resolve D2/D4.
 - **Language count, resolved:** sources disagree (16, 17, or 18 depending on the page) because task coverage varies — the paper's own figure is **17 native African languages + English + French**, but individual task datasets don't all cover the full 17 (e.g. AfriMGSM's actual language table lists only 15 African codes + en + fr = 17 configs total, not the full 17 African + 2).
 - **AfriMGSM specifics (verified directly against the dataset card):**
-  - Languages/configs (17 total): `am, ee, ha, kin, ln, lug, orm, sna, sw, tw, vai, wo, xh, yo, zu, en, fr` (note: the card's own load-syntax example uses `'eng'` while the split table lists `en` — another minor card self-inconsistency, use `en` per the table).
+  - **⚠️ Corrected 2026-09-02 against the datasets-server API — the card's language list is wrong.** The real configs are **19**, in three-letter ISO codes: `amh, eng, ewe, fra, hau, ibo, kin, lin, lug, orm, sna, sot, swa, twi, vai, wol, xho, yor, zul`. Not 17, and not the two-letter codes (`ha`, `sw`, `en`) the card's table lists — Hausa is `hau`, Swahili `swa`. Third dataset in this sheet whose card prose contradicts its own data; query the API rather than reading the table.
   - Splits: every language has `train`: 8, `test`: 250 (mirrors the original GSM8k subset sizes used).
   - Schema (per-language data, richer than the base card's simple "question, answer" description): `question` (string), `answer` (full chain-of-thought string), `answer_number` (int, clean numeric target), `equation_solution` (string, the arithmetic expression) — the two extra fields aren't mentioned in the card's own "Data Fields" section.
   - License: Apache-2.0 stated on this specific dataset's own card (vs. the collection-level CC BY-SA 4.0 from the paper) — minor license inconsistency between the collection and the individual dataset card, worth a note but not treated as contradictory (Apache-2.0 is compatible with/a subset of what CC BY-SA 4.0 permits for this kind of use).
 
 ---
 
-## 6. TukaBench
+## 6. LSR — Linguistic Safety Robustness
+
+- **Role in this project:** methodology reference for cross-lingual refusal measurement, **not** a training or bulk-evaluation source.
+- **Source:** Faruna, G. A. (2026). *LSR: Linguistic Safety Robustness Benchmark for Low-Resource West African Languages.* arXiv:2603.19273, submitted 27 February 2026. Single author.
+- **Link:** `Faruna01/lsr-benchmark` (HF Datasets); live dashboard at `Faruna01/lsr-dashboard` (HF Spaces).
+- **License:** CC-BY-SA 4.0.
+- **Languages:** Yoruba, Hausa, Igbo, **Igala**.
+- **What it measures:** cross-lingual refusal degradation, via a **dual-probe protocol** — matched English and target-language probes submitted to the same model — scored with **Refusal Centroid Drift (RCD)**, quantifying how much of a model's English refusal behaviour is lost when the harmful intent is expressed in the target language.
+- **Reported findings:** on Gemini 2.5 Flash, English refusal holds at ~90%; across the four West African languages it falls to **35-55%**, with Igala worst at RCD = 0.55.
+- **⚠️ Very small: 14 probes**, across four harm categories. This is a proof-of-concept benchmark, not a corpus. Useful for its *method*, not its volume — do not plan to train or to compute per-language statistics on it.
+- **⚠️ Construction method not stated.** The paper does not say whether the target-language probes were natively authored, human-translated or machine-translated. Same unanswered question as UbuntuGuard's (D4); treat as unknown rather than assuming.
+- **Only one model evaluated**, and it is closed (Gemini 2.5 Flash). No open model, and no African-CPT model, has been measured with this protocol.
+- **Why it matters to us anyway:** the dual-probe design is an independent validation of the English-control logic already built into our evaluation — measure the same question in English and in the target language, and treat the *gap* as the result. RCD is a ready-made, citable name for that gap.
+
+---
+
+## 7. TukaBench
 
 - **Role in this project:** strong candidate for **D1** (source prompts to build our own on-policy DPO pairs), **D2** (Refusal Rate evaluation — better language overlap than UbuntuGuard), and **D3** (Over-Refusal, via `afri-jbb-benign` — covers Hausa and Swahili, which HealthBench-Africa doesn't).
 - **Source:** Akinode, V., Li, S., Hamidouche, W., Zamir, W., Becker-Reshef, I., & Adelani, D. I. (2026). *TukaBench: A Culturally Grounded Jailbreak Benchmark for African Languages*. arXiv:2606.01322 — Mila (Quebec AI Institute), McGill University, Microsoft AI for Good Research Lab. **Same institution (McGill-NLP) as our target model (AfriqueQwen3.5-4B-50Langs)** — a good sign of ecosystem/tooling compatibility.
