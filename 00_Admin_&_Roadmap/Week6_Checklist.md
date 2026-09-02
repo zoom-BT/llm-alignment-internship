@@ -1,62 +1,80 @@
-# 🎯 Week 6: Main Experiments
+# 🎯 Semaine 6 : Expériences principales
 
-**Calendar:** 2026-08-31 (Mon) – 2026-09-04 (Fri) per the contract. Tasks are tracked against this nominal calendar regardless of which day the work actually gets done — see [[Week5_Checklist.md]] for what carries over.
+**Calendrier :** 2026-08-31 (lun) – 2026-09-04 (ven) selon le contrat.
 
-## 🎯 Objective (contract, Annex A — verbatim)
+**⚠️ Changement de sujet en cours de semaine.** Cette checklist a d'abord été écrite pour le sujet v1 — tâche gardien, juge de conformité, bras B1 à B4 sur UbuntuGuard. Ce sujet a été abandonné le 1ᵉʳ septembre après une pause délibérée, et reconstruit depuis la revue systématique. La version v1 reste dans l'historique git ; ce qui suit décrit le sujet réellement en cours.
+
+**Sujet v2 : Instruct-CPT pour l'Afrique.** Voir `04_Weekly_Reports/Sujet_v2_02_Instruct_CPT.md` et `Sujet_v2_03_Selection_Sources.md`.
+
+## 🎯 Objectif (contrat, Annexe A — verbatim)
 > "WEEK 6: MAIN EXPERIMENTS — During Week 6, the Intern shall execute the central experiments required to test the research hypothesis. The Intern shall: modify only one major experimental variable at a time where reasonably possible; use consistent datasets and metrics across comparisons; record all random seeds; use multiple random seeds where computationally feasible; retain essential checkpoints and configuration files; document failed and interrupted experiments; inspect individual examples in addition to aggregate metrics; verify that any apparent improvement does not result from data leakage; compare the results with the base model and the selected baselines."
 
-## ⏮️ Carried over from Week 5 — all four blocked on the same first GPU session
-- [ ] evaluate the selected models without modification; — B1 (AfriqueQwen-Raw) and Qwen3.5-4B-Base on the guardian task
-- [ ] establish baseline performance;
-- [ ] estimate the computing time, memory requirements, and financial cost where applicable;
-- [ ] verify that interrupted experiments can resume from checkpoints.
+## 🧭 Le dispositif, en une ligne
 
-Plus the two Week 5 deliverables that depend on them: baseline results, and an initial version of the main results table.
+Les modèles CPT africains sont des checkpoints **base** : capables, jamais alignés. On fait l'étape InstructGPT — SFT puis DPO — et on mesure si elle part de meilleures fondations sur un backbone CPT que sur sa base d'origine.
 
-## ✅ Tasks (contract, verbatim) — mapped to this topic
-- [ ] modify only one major experimental variable at a time where reasonably possible; — B3 vs B4 differ **only** in the backbone (Qwen-Base vs AfriqueQwen); same data, same hyperparameters, same seed. That single-variable design is what makes H2 attributable
-- [ ] use consistent datasets and metrics across comparisons; — every arm scored on the same held-out slice with the same guardian macro F1; the English control uses the same axis filter as the African slice
-- [ ] record all random seeds; — `config.yaml` `training.seed`, and the split seed it derives (`split_three_way` uses `seed` and `seed + 1`)
-- [ ] use multiple random seeds where computationally feasible; — at minimum 3 seeds for B3/B4, since the whole claim is a difference between them and a one-seed difference is not evidence
-- [ ] retain essential checkpoints and configuration files; — LoRA adapters only (tens of MB, not GB), plus the exact `config.yaml` per run
-- [ ] document failed and interrupted experiments; — continue the D-series in `03_Experiments/Week5_Deviations_From_Proposal.md` or open a Week 6 experiment log
-- [ ] inspect individual examples in addition to aggregate metrics; — the eval writes `records_*.jsonl` with every raw completion for exactly this; read the English-control rows by hand
-- [ ] verify that any apparent improvement does not result from data leakage; — already enforced in code at `base_stem` level and verified at zero; re-verify per run rather than assuming it holds
-- [ ] compare the results with the base model and the selected baselines. — B1/B3/B4, paired via McNemar (`src/metrics.py`), not an unpaired test
+| Bras | Modèle | Traitement | Rôle |
+| :---- | :---- | :---- | :---- |
+| **A0** | Qwen3.5-4B-Base | aucun | point de départ |
+| **A1** | AfriqueQwen3.5-4B-50Langs | aucun | point de départ après CPT |
+| **A2** | Qwen3.5-4B-Base | SFT → DPO | contrôle aligné |
+| **A3** | AfriqueQwen3.5-4B-50Langs | SFT → DPO | cible alignée |
 
-## 📥 Deliverables (contract, verbatim)
-- [ ] the experimental scripts; — `src/run_guardian_eval.py` exists; the judge/agent training entry point still needs writing
-- [ ] the configuration files;
-- [ ] the training and evaluation curves; — `save_training_curves` in `src/train.py`
+**Le claim est A3 − A2**, à données, recette et graines identiques. Langue : haoussa.
+
+## ✅ Tâches (contrat, verbatim) — appliquées à ce sujet
+- [x] modify only one major experimental variable at a time where reasonably possible; — A2 et A3 ne diffèrent que par le **backbone**. Mêmes données, mêmes hyperparamètres, même graine. Et les deux partagent le tokenizer (248 044 tokens), donc la tokenisation est contrôlée : aucun écart mesuré ne peut lui être attribué
+- [x] use consistent datasets and metrics across comparisons; — socle unique : Aya 3 512 (SFT), Uhura 791 + UbuntuGuard 128 (DPO). Toutes licences propres, Apache-2.0 et MIT
+- [x] record all random seeds; — `config.yaml` `training.seed`, et les graines dérivées du découpage (`seed`, `seed + 1`)
+- [ ] use multiple random seeds where computationally feasible; — **3 graines si le filtre 3 le permet.** Le claim est une différence entre deux bras ; une différence sur une graine unique ne se distingue pas du bruit d'initialisation
+- [ ] retain essential checkpoints and configuration files; — adaptateurs LoRA seuls, quelques dizaines de Mo, plus le `config.yaml` exact de chaque run
+- [x] document failed and interrupted experiments; — le sujet v1 tout entier en est un : neuf déviations, `Week5_Deviations_From_Proposal.md`. Continuer pour le v2
+- [ ] inspect individual examples in addition to aggregate metrics; — lire les sorties haoussa avant et après alignement. Le contrôle anglais reste le seul lisible sans locuteur natif
+- [x] verify that any apparent improvement does not result from data leakage; — découpage au niveau `base_stem`, vérifié à zéro au notebook 03, **y compris entre SFT et DPO** — sans quoi le DPO réoptimiserait ce que le SFT a déjà vu
+- [ ] compare the results with the base model and the selected baselines. — A0 et A1 sont exactement ça : les deux points de départ non alignés
+
+## 📥 Livrables (contrat, verbatim)
+- [x] the experimental scripts; — `src/train.py` (`run_sft`, `run_dpo`), `src/data.py`, `src/metrics.py`, `scripts/kaggle_run.py`. 107 tests
+- [x] the configuration files; — `config.yaml`, sections `sft` et `dpo` séparées
+- [ ] the training and evaluation curves; — `save_training_curves` écrit PNG + historique JSON à chaque run
 - [ ] the result tables;
-- [ ] qualitative examples; — from `records_*.jsonl`, English control first since those are readable
+- [ ] qualitative examples;
 - [ ] the experiment log;
 - [ ] a summary of the provisional conclusions.
 
-## 📅 Order of work
+## 📅 Déroulé réel de la semaine
 
-The sequencing matters: it is built so that a result exists even if the week runs short on compute.
+| Jour | Ce qui s'est passé |
+| :---- | :---- |
+| lun 31 août – mar 1ᵉʳ sept | Pause délibérée. Décision de repartir de zéro sur le sujet, en s'appuyant sur la revue systématique |
+| mar 1ᵉʳ sept | Étape 1 : extraction des huit gaps déclarés par la revue |
+| mer 2 sept | Étapes 2 et 3 : sujet Instruct-CPT défini, sources vérifiées et sélectionnées, notebook d'inspection exécuté, `run_sft` écrit, chaîne Kaggle montée |
+| jeu 3 – ven 4 sept | Filtre 3, puis les quatre bras si le budget le permet |
 
-| Step | What | Why in this order |
-| :---- | :---- | :---- |
-| 1 | Smoke test, `--limit 20`, both backbones | Costs two minutes. Reveals whether a base model follows the answer format at all, and whether `DPOTrainer` accepts a `qwen3_5` multimodal checkpoint — both unknowns that would otherwise surface mid-run |
-| 2 | Train the compliance judge on the judge slice (Qwen-Base) | Self-contained, and its macro F1 is a publishable result on its own. Everything downstream is bounded by this number |
-| 3 | Measure the judge: African slice, English control, per language | Produces the instrument's stated precision, per `Judge_Validation_Protocol.md` |
-| 4 | B1 baseline | Closes the four carried-over Week 5 tasks |
-| 5 | B3 and B4 DPO runs, ≥3 seeds | The actual H2 comparison |
-| 6 | Evaluate both on the Honest **and** Harmless axes | D9's cross-axis transfer question |
+## ⏭️ Prochaine action, précise
 
-## ⚠️ Known risks going in
-- **`DPOTrainer` on a multimodal checkpoint.** Both backbones are `model_type: qwen3_5` with a `vision_config`. `AutoModelForCausalLM` maps to the text-only variant, but TRL's behaviour on such a checkpoint is untested here. Step 1 exists to find out cheaply.
-- **A base model may not follow the answer format.** `Qwen3.5-4B-Base` is not instruction-tuned. If the unparseable-output rate is high, the judge needs an SFT pass on the response format before DPO. The eval warns above 20%.
-- **Transformers version on the Kaggle image.** `qwen3_5` needs >= 5.12.1; older images fail to load the model outright. `pip install -U transformers` first.
-- **Internet must be enabled** in the notebook settings — Kaggle's model entries are pointers to Hugging Face, not offline copies. An `HF_TOKEN` in Kaggle Secrets avoids rate limiting.
+```
+python scripts/kaggle_run.py push notebooks/04_filtre3_faisabilite.ipynb --accelerator --timeout 3600
+```
 
-## 🧭 Still open, and not GPU-blocked
-- [ ] Send the drafted email to UbuntuGuard's corresponding author (licence confirmation, training split, label validation) — draft in `03_Experiments/Week5_Author_Email_DRAFT.local.md`, gitignored
-- [ ] Verify **LSR** (Faruna 2026, arXiv:2603.19273) against its own source — a West African cross-lingual refusal-degradation benchmark found in the systematic review, absent from the dataset sheet
-- [ ] AfriHate's exact per-language split sizes
-- [ ] HealthBench-Africa's licence
+Le filtre 3 mesure le temps par pas et la VRAM crête sur 8 pas de SFT puis 8 pas de DPO, et extrapole. Il produit `results/compute_estimate.json` — **le livrable d'estimation compute reporté depuis la semaine 5**, avec des chiffres mesurés.
 
-## 👉 Bridge to Week 7
-Week 7 (Robustness, Ablations, and Analysis) takes the A1 volume ablation — reachable at 100/200/868 now that the pair pool is 1,089 rather than the 401 first recorded — and the per-axis breakdown from D9.
+Son verdict décide de la suite : quatre bras avec 3 graines, ou une seule graine déclarée comme limitation.
+
+## ⚠️ Risques connus à l'entrée
+
+| Risque | Traitement |
+| :---- | :---- |
+| Le budget ne permet qu'une graine | déclarer la limitation, ne pas la masquer. Une différence sur une graine unique n'est pas une preuve |
+| Volume haoussa modeste : 3 512 SFT, 919 paires DPO | ConsistentGuard publie sur 1 000 exemples. Comparable, à déclarer |
+| Auto-mutilation et contenu sexuel sans couverture native | limite de l'écosystème documentée par arXiv:2608.13695, à citer dans les limitations |
+| L'axe Harmless est trop mince pour l'entraînement (26 paires) | bascule entièrement en évaluation, via AfriHate et TukaBench |
+| Étiquettes UbuntuGuard non validées humainement | limite héritée. Sonde par locuteur natif haoussa envisagée depuis l'ENSPY |
+| Sessions Kaggle froides : ~5 min de téléchargement par run | soumission batch plutôt qu'interactive, quota consommé seulement pendant l'exécution |
+
+## 👉 Vers la semaine 7
+
+Semaine 7 (Robustesse, ablations, analyse) prendrait :
+- l'ablation de volume SFT, pour savoir combien de démonstrations suffisent
+- le bras supplémentaire `afrisynt` — le volume compense-t-il l'absence de licence et de validation ?
+- la généralisation au swahili, où MultiJail et RTP-LX fournissent des évaluations humainement validées que le haoussa n'a pas
